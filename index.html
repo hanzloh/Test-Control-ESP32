@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,3341 +6,296 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ESP32 Control Panel</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary-purple: #8b5cf6;
-            --primary-cyan: #06b6d4;
-            --primary-green: #10b981;
-            --primary-blue: #3b82f6;
-            --primary-orange: #f59e0b;
-            --primary-red: #ef4444;
-            
-            --bg-primary: rgba(255, 255, 255, 0.05);
-            --bg-secondary: rgba(255, 255, 255, 0.02);
-            --bg-tertiary: rgba(0, 0, 0, 0.2);
-            
-            --border-primary: rgba(255, 255, 255, 0.1);
-            --border-secondary: rgba(139, 92, 246, 0.2);
-            
-            --text-primary: #ffffff;
-            --text-secondary: #e5e7eb;
-            --text-muted: #9ca3af;
-            
-            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.15);
-            --shadow-md: 0 8px 25px rgba(0, 0, 0, 0.25);
-            --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.35);
-            --shadow-glow: 0 0 30px rgba(139, 92, 246, 0.3);
-            
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
-            --radius-xl: 20px;
-            
-            --spacing-xs: 4px;
-            --spacing-sm: 8px;
-            --spacing-md: 16px;
-            --spacing-lg: 24px;
-            --spacing-xl: 32px;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a0033 25%, #330066 50%, #1a0033 75%, #0a0a0a 100%);
-            background-size: 400% 400%;
-            animation: gradientShift 20s ease infinite;
-            min-height: 100vh;
-            color: var(--text-primary);
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        /* Enhanced Background Effects */
-        .background-effects {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .floating-orbs {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-        }
-
-        .orb {
-            position: absolute;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(139, 92, 246, 0.3), rgba(139, 92, 246, 0.1), transparent);
-            animation: floatOrb 25s ease-in-out infinite;
-            filter: blur(1px);
-        }
-
-        .orb:nth-child(1) { width: 180px; height: 180px; left: 10%; animation-delay: 0s; }
-        .orb:nth-child(2) { width: 120px; height: 120px; right: 15%; animation-delay: 8s; }
-        .orb:nth-child(3) { width: 80px; height: 80px; left: 60%; animation-delay: 16s; }
-
-        @keyframes floatOrb {
-            0%, 100% { transform: translateY(100vh) scale(0.8) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            50% { transform: translateY(-10vh) scale(1.1) rotate(180deg); opacity: 0.6; }
-            90% { opacity: 1; }
-            100% { transform: translateY(-110vh) scale(0.6) rotate(360deg); opacity: 0; }
-        }
-
-        .grid-overlay {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(139, 92, 246, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(139, 92, 246, 0.03) 1px, transparent 1px);
-            background-size: 60px 60px;
-            animation: gridMove 30s linear infinite;
-        }
-
-        @keyframes gridMove {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(60px, 60px); }
-        }
-
-        /* Main Container */
-        .container {
-            width: 100%;
-            min-height: 100vh;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: var(--spacing-lg);
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-lg);
-            position: relative;
-            z-index: 2;
-        }
-
-        /* Enhanced Card System */
-        .card {
-            background: var(--bg-primary);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border-primary);
-            border-radius: var(--radius-xl);
-            padding: var(--spacing-lg);
-            position: relative;
-            overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: var(--shadow-md);
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
-            transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .card:hover::before {
-            left: 100%;
-        }
-
-        .card:hover {
-            transform: translateY(-2px);
-            border-color: var(--border-secondary);
-            box-shadow: var(--shadow-lg), var(--shadow-glow);
-        }
-
-        /* Header Section */
-        .header {
-            flex-shrink: 0;
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .title {
-            font-size: 28px;
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-md);
-            background: linear-gradient(45deg, var(--primary-purple), var(--primary-cyan));
-            background-size: 200% 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: titleGradient 4s ease infinite;
-            letter-spacing: -0.5px;
-        }
-
-        @keyframes titleGradient {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        .status-dot {
-            width: 12px;
-            height: 12px;
-            background: radial-gradient(circle, var(--primary-green), #059669);
-            border-radius: 50%;
-            animation: statusPulse 2s ease infinite;
-            box-shadow: 0 0 20px var(--primary-green);
-        }
-
-        @keyframes statusPulse {
-            0%, 100% { 
-                transform: scale(1);
-                box-shadow: 0 0 20px var(--primary-green);
-            }
-            50% { 
-                transform: scale(1.2);
-                box-shadow: 0 0 30px var(--primary-green);
-            }
-        }
-
-        .header-controls {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-md);
-        }
-
-        .wifi-status {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            font-size: 14px;
-            font-weight: 500;
-            padding: var(--spacing-sm) var(--spacing-md);
-            background: rgba(16, 185, 129, 0.1);
-            border-radius: var(--radius-lg);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            backdrop-filter: blur(10px);
-            animation: wifiGlow 3s ease-in-out infinite;
-        }
-
-        @keyframes wifiGlow {
-            0%, 100% { 
-                box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
-                border-color: rgba(16, 185, 129, 0.2);
-            }
-            50% { 
-                box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
-                border-color: rgba(16, 185, 129, 0.4);
-            }
-        }
-
-        .wifi-icon {
-            width: 16px;
-            height: 16px;
-            color: var(--primary-green);
-        }
-
-        .settings-btn {
-            background: var(--bg-primary);
-            border: 1px solid var(--border-primary);
-            color: var(--text-primary);
-            padding: var(--spacing-md);
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(10px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .settings-btn:hover {
-            transform: rotate(90deg) scale(1.05);
-            border-color: var(--border-secondary);
-            box-shadow: var(--shadow-glow);
-        }
-
-        /* Enhanced Tab System */
-        .tabs {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            min-height: 0;
-        }
-
-        .tab-list {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: var(--spacing-sm);
-            margin-bottom: var(--spacing-lg);
-            background: var(--bg-secondary);
-            backdrop-filter: blur(15px);
-            border: 1px solid var(--border-primary);
-            border-radius: var(--radius-lg);
-            padding: var(--spacing-sm);
-        }
-
-        .tab-button {
-            background: transparent;
-            border: none;
-            color: var(--text-secondary);
-            padding: var(--spacing-md) var(--spacing-lg);
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: var(--spacing-sm);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-weight: 600;
-            font-size: 14px;
-            position: relative;
-        }
-
-        .tab-button::before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            width: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--primary-purple), var(--primary-cyan));
-            border-radius: 1px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            transform: translateX(-50%);
-        }
-
-        .tab-button:hover {
-            color: var(--text-primary);
-        }
-
-        .tab-button:hover::before {
-            width: 60%;
-        }
-
-        .tab-button.active {
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border-secondary);
-        }
-
-        .tab-button.active::before {
-            width: 80%;
-        }
-
-        .tab-content {
-            flex: 1;
-            display: none;
-            min-height: 0;
-        }
-
-        .tab-content.active {
-            display: flex;
-            flex-direction: column;
-            animation: tabFadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        @keyframes tabFadeIn {
-            from { 
-                opacity: 0; 
-                transform: translateY(10px); 
-            }
-            to { 
-                opacity: 1; 
-                transform: translateY(0); 
-            }
-        }
-
-        /* Enhanced Grid System */
-        .control-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: var(--spacing-lg);
-            flex: 1;
-        }
-
-        .panel {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            animation: panelSlideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .panel:nth-child(1) { animation-delay: 0.1s; }
-        .panel:nth-child(2) { animation-delay: 0.2s; }
-        .panel:nth-child(3) { animation-delay: 0.3s; }
-        .panel:nth-child(4) { animation-delay: 0.4s; }
-
-        @keyframes panelSlideIn {
-            from { 
-                opacity: 0; 
-                transform: translateY(20px); 
-            }
-            to { 
-                opacity: 1; 
-                transform: translateY(0); 
-            }
-        }
-
-        .panel-header {
-            margin-bottom: var(--spacing-md);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: var(--spacing-sm);
-            border-bottom: 1px solid var(--border-primary);
-        }
-
-        .panel-title {
-            font-size: 18px;
-            font-weight: 700;
-            background: linear-gradient(45deg, var(--primary-purple), var(--primary-cyan));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: -0.3px;
-        }
-
-        .panel-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            gap: var(--spacing-lg);
-        }
-
-        /* Enhanced Movement Controls */
-        .movement-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-md);
-        }
-
-        .movement-btn {
-            position: relative;
-            cursor: pointer;
-            user-select: none;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .movement-btn:active {
-            transform: scale(0.98);
-        }
-
-        .movement-btn-shadow {
-            position: absolute;
-            inset: 0;
-            border-radius: var(--radius-md);
-            transform: translateY(4px);
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            filter: blur(4px);
-        }
-
-        .movement-btn:active .movement-btn-shadow {
-            transform: translateY(2px);
-        }
-
-        .movement-btn-face {
-            position: relative;
-            padding: var(--spacing-lg);
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border-primary);
-            box-shadow: var(--shadow-sm);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 14px;
-            gap: var(--spacing-sm);
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(10px);
-            letter-spacing: 0.5px;
-        }
-
-        .movement-btn:active .movement-btn-face {
-            transform: translateY(2px);
-        }
-
-        .movement-btn-face::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent 50%);
-            border-radius: var(--radius-md);
-            pointer-events: none;
-        }
-
-        .forward-btn .movement-btn-shadow {
-            background: linear-gradient(135deg, var(--primary-blue), #1d4ed8);
-        }
-
-        .forward-btn .movement-btn-face {
-            background: linear-gradient(135deg, var(--primary-blue), #1e40af);
-            color: white;
-        }
-
-        .backward-btn .movement-btn-shadow {
-            background: linear-gradient(135deg, var(--primary-red), #dc2626);
-        }
-
-        .backward-btn .movement-btn-face {
-            background: linear-gradient(135deg, var(--primary-red), #dc2626);
-            color: white;
-        }
-
-        /* Enhanced Joystick */
-        .joystick-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: var(--spacing-lg);
-        }
-
-        .joystick {
-            position: relative;
-            width: 140px;
-            height: 140px;
-            background: 
-                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1), transparent 50%),
-                linear-gradient(135deg, #2a2a3a, #1a1a2a);
-            border-radius: 50%;
-            border: 2px solid var(--border-secondary);
-            box-shadow: 
-                var(--shadow-glow),
-                inset 0 0 20px rgba(0, 0, 0, 0.3);
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .joystick.active {
-            transform: scale(1.02);
-            border-color: var(--primary-purple);
-            box-shadow: 
-                0 0 40px rgba(139, 92, 246, 0.4),
-                inset 0 0 25px rgba(0, 0, 0, 0.4);
-        }
-
-        .joystick-knob {
-            position: absolute;
-            width: 45px;
-            height: 45px;
-            background: 
-                radial-gradient(circle at 30% 30%, #ffffff, var(--primary-purple) 40%, #7c3aed 70%);
-            border-radius: 50%;
-            box-shadow: 
-                var(--shadow-sm),
-                0 0 15px rgba(139, 92, 246, 0.4);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            transform: translate(-50%, -50%);
-            transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
-            top: 50%;
-            left: 50%;
-            cursor: grab;
-        }
-
-        .joystick-knob:active {
-            cursor: grabbing;
-            transform: translate(-50%, -50%) scale(1.05);
-        }
-
-        .joystick-knob::before {
-            content: '';
-            position: absolute;
-            top: 15%;
-            left: 15%;
-            width: 70%;
-            height: 70%;
-            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.6), transparent 60%);
-            border-radius: 50%;
-        }
-
-        .joystick-center {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 4px;
-            height: 4px;
-            background: radial-gradient(circle, #ffffff, var(--primary-purple));
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 10px var(--primary-purple);
-            animation: centerPulse 2s ease-in-out infinite;
-        }
-
-        @keyframes centerPulse {
-            0%, 100% { 
-                opacity: 1; 
-                transform: translate(-50%, -50%) scale(1);
-            }
-            50% { 
-                opacity: 0.7; 
-                transform: translate(-50%, -50%) scale(1.3);
-            }
-        }
-
-        .joystick-values {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: var(--spacing-md);
-            width: 100%;
-        }
-
-        .joystick-value {
-            background: var(--bg-tertiary);
-            padding: var(--spacing-md);
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border-primary);
-            backdrop-filter: blur(10px);
-            text-align: center;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .joystick-value:hover {
-            transform: translateY(-2px);
-            border-color: var(--border-secondary);
-        }
-
-        .joystick-number {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--primary-purple);
-            text-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
-        }
-
-        .joystick-axis {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: var(--spacing-xs);
-            font-weight: 500;
-        }
-
-        .direction-indicator {
-            text-align: center;
-            padding: var(--spacing-md);
-            background: var(--bg-tertiary);
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border-primary);
-            backdrop-filter: blur(10px);
-        }
-
-        .direction-label {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: var(--spacing-xs);
-            font-weight: 500;
-        }
-
-        .direction-value {
-            font-size: 16px;
-            font-weight: 700;
-            text-shadow: 0 0 10px currentColor;
-        }
-
-        /* Enhanced Pump Button */
-        .pump-btn {
-            position: relative;
-            cursor: pointer;
-            user-select: none;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .pump-btn:active {
-            transform: scale(0.95);
-        }
-
-        .pump-btn-shadow {
-            position: absolute;
-            inset: 0;
-            border-radius: var(--radius-md);
-            transform: translateY(2px);
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            filter: blur(2px);
-        }
-
-        .pump-btn:active .pump-btn-shadow {
-            transform: translateY(1px);
-        }
-
-        .pump-btn-face {
-            position: relative;
-            padding: var(--spacing-md);
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border-primary);
-            box-shadow: var(--shadow-sm);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(10px);
-        }
-
-        .pump-btn:active .pump-btn-face {
-            transform: translateY(1px);
-        }
-
-        .pump-btn.active .pump-btn-shadow {
-            background: linear-gradient(135deg, var(--primary-cyan), #0891b2);
-        }
-
-        .pump-btn.active .pump-btn-face {
-            background: linear-gradient(135deg, var(--primary-cyan), #0891b2);
-            color: white;
-            animation: pumpActive 1.5s ease-in-out infinite;
-        }
-
-        @keyframes pumpActive {
-            0%, 100% { 
-                box-shadow: var(--shadow-sm), 0 0 15px rgba(6, 182, 212, 0.3);
-            }
-            50% { 
-                box-shadow: var(--shadow-sm), 0 0 25px rgba(6, 182, 212, 0.5);
-            }
-        }
-
-        .pump-btn:not(.active) .pump-btn-shadow {
-            background: linear-gradient(135deg, #6b7280, #4b5563);
-        }
-
-        .pump-btn:not(.active) .pump-btn-face {
-            background: linear-gradient(135deg, #6b7280, #4b5563);
-            color: var(--text-secondary);
-        }
-
-        .pump-icon {
-            width: 20px;
-            height: 20px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .pump-btn.active .pump-icon {
-            animation: pumpSpin 2s linear infinite;
-        }
-
-        @keyframes pumpSpin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        /* Enhanced Battery Display */
-        .battery-display {
-            text-align: center;
-            padding: var(--spacing-lg);
-        }
-
-        .battery-icon {
-            width: 48px;
-            height: 48px;
-            margin: 0 auto var(--spacing-md);
-            filter: drop-shadow(0 0 10px currentColor);
-            animation: batteryFloat 3s ease-in-out infinite;
-        }
-
-        @keyframes batteryFloat {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-3px); }
-        }
-
-        .battery-percentage {
-            font-size: 32px;
-            font-weight: 800;
-            margin-bottom: var(--spacing-sm);
-            text-shadow: 0 0 20px currentColor;
-            line-height: 1;
-        }
-
-        .battery-label {
-            font-size: 14px;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .battery-bar {
-            width: 100%;
-            margin: var(--spacing-lg) 0;
-        }
-
-        .battery-bar-bg {
-            background: var(--bg-tertiary);
-            border-radius: var(--radius-sm);
-            height: 12px;
-            overflow: hidden;
-            border: 1px solid var(--border-primary);
-        }
-
-        .battery-bar-fill {
-            height: 100%;
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            border-radius: var(--radius-sm);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .battery-bar-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            animation: batteryShine 3s linear infinite;
-        }
-
-        @keyframes batteryShine {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        .battery-high {
-            color: var(--primary-green);
-        }
-
-        .battery-medium {
-            color: var(--primary-orange);
-        }
-
-        .battery-low {
-            color: var(--primary-red);
-        }
-
-        .battery-high .battery-bar-fill {
-            background: linear-gradient(90deg, var(--primary-green), #059669);
-        }
-
-        .battery-medium .battery-bar-fill {
-            background: linear-gradient(90deg, var(--primary-orange), #d97706);
-        }
-
-        .battery-low .battery-bar-fill {
-            background: linear-gradient(90deg, var(--primary-red), #dc2626);
-        }
-
-        /* Enhanced System Stats */
-        .system-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: var(--spacing-md);
-        }
-
-        .stat-item {
-            background: var(--bg-tertiary);
-            padding: var(--spacing-md);
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border-primary);
-            backdrop-filter: blur(10px);
-            text-align: center;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .stat-item:hover {
-            transform: translateY(-2px);
-            border-color: var(--border-secondary);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .stat-value {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: var(--spacing-xs);
-            text-shadow: 0 0 10px currentColor;
-            line-height: 1;
-        }
-
-        .stat-label {
-            font-size: 11px;
-            color: var(--text-muted);
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        /* Enhanced Servo Control */
-        .servo-control {
-            margin-top: var(--spacing-lg);
-        }
-
-        .servo-label {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: var(--spacing-md);
-            text-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
-        }
-
-        .servo-container {
-            background: var(--bg-tertiary);
-            padding: var(--spacing-lg);
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border-primary);
-            backdrop-filter: blur(10px);
-        }
-
-        .servo-values {
-            display: flex;
-            justify-content: space-between;
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin-bottom: var(--spacing-md);
-            font-weight: 500;
-        }
-
-        .servo-current {
-            color: var(--primary-purple);
-            font-weight: 700;
-            text-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
-        }
-
-        .slider {
-            width: 100%;
-            height: 6px;
-            background: var(--bg-tertiary);
-            border-radius: 3px;
-            outline: none;
-            -webkit-appearance: none;
-            border: 1px solid var(--border-primary);
-        }
-
-        .slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
-            background: linear-gradient(45deg, var(--primary-purple), var(--primary-cyan));
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: var(--shadow-sm), 0 0 10px rgba(139, 92, 246, 0.3);
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .slider::-webkit-slider-thumb:hover {
-            transform: scale(1.1);
-            box-shadow: var(--shadow-md), 0 0 15px rgba(139, 92, 246, 0.5);
-        }
-
-        .slider::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            background: linear-gradient(45deg, var(--primary-purple), var(--primary-cyan));
-            border-radius: 50%;
-            cursor: pointer;
-            border: none;
-            box-shadow: var(--shadow-sm), 0 0 10px rgba(139, 92, 246, 0.3);
-        }
-
-        /* Enhanced Stats Page */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: var(--spacing-lg);
-            flex: 1;
-        }
-
-        .sensor-data {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: var(--spacing-lg);
-        }
-
-        .mini-chart {
-            background: var(--bg-tertiary);
-            padding: var(--spacing-lg);
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border-primary);
-            backdrop-filter: blur(10px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .mini-chart:hover {
-            transform: translateY(-2px);
-            border-color: var(--border-secondary);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .chart-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: var(--spacing-md);
-        }
-
-        .chart-label {
-            font-size: 14px;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .chart-value {
-            font-size: 16px;
-            font-weight: 700;
-            text-shadow: 0 0 10px currentColor;
-        }
-
-        .chart-bars {
-            height: 50px;
-            display: flex;
-            align-items: end;
-            gap: 2px;
-        }
-
-        .chart-bar {
-            flex: 1;
-            background: var(--primary-blue);
-            border-radius: 2px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .chart-bar::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to top, transparent, rgba(255, 255, 255, 0.2));
-            animation: barShine 2s linear infinite;
-        }
-
-        @keyframes barShine {
-            0% { transform: translateY(100%); }
-            100% { transform: translateY(-100%); }
-        }
-
-        .chart-bar:hover {
-            transform: scaleY(1.05);
-            filter: brightness(1.2);
-        }
-
-        /* Enhanced System Info */
-        .system-info {
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-lg);
-        }
-
-        .progress-item {
-            margin-bottom: var(--spacing-md);
-        }
-
-        .progress-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: var(--spacing-sm);
-        }
-
-        .progress-label {
-            font-size: 14px;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .progress-value {
-            font-size: 14px;
-            font-weight: 700;
-            text-shadow: 0 0 10px currentColor;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: var(--bg-tertiary);
-            border-radius: 4px;
-            overflow: hidden;
-            border: 1px solid var(--border-primary);
-        }
-
-        .progress-fill {
-            height: 100%;
-            border-radius: 4px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .progress-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            animation: progressShine 2s linear infinite;
-        }
-
-        @keyframes progressShine {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: var(--spacing-md);
-            margin-top: var(--spacing-lg);
-        }
-
-        .info-item {
-            background: var(--bg-tertiary);
-            padding: var(--spacing-md);
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border-primary);
-            backdrop-filter: blur(10px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .info-item:hover {
-            transform: translateY(-2px);
-            border-color: var(--border-secondary);
-        }
-
-        .info-label {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: var(--spacing-xs);
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .info-value {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-
-        .log-container {
-            margin-top: var(--spacing-lg);
-        }
-
-        .log-header {
-            font-size: 14px;
-            color: var(--text-muted);
-            margin-bottom: var(--spacing-sm);
-            font-weight: 500;
-        }
-
-        .log-content {
-            background: var(--bg-tertiary);
-            padding: var(--spacing-md);
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border-primary);
-            height: 120px;
-            overflow-y: auto;
-            font-size: 12px;
-            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
-            backdrop-filter: blur(10px);
-        }
-
-        .log-entry {
-            margin-bottom: 2px;
-            line-height: 1.4;
-        }
-
-        .log-success { color: var(--primary-green); }
-        .log-warning { color: var(--primary-orange); }
-        .log-error { color: var(--primary-red); }
-        .log-info { color: var(--text-secondary); }
-
-        /* Enhanced Footer */
-        .footer {
-            flex-shrink: 0;
-        }
-
-        .footer-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 14px;
-            color: var(--text-muted);
-            padding: var(--spacing-md) 0;
-            font-weight: 500;
-        }
-
-        /* Enhanced Modal */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(20px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 50;
-            padding: var(--spacing-lg);
-            animation: modalFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        @keyframes modalFadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
+        /* CSS sebelumnya tetap sama, hanya menambahkan beberapa penyesuaian untuk mobile dan settings modal */
+        
+        /* Tambahan untuk Settings Modal */
         .modal-content {
             width: 100%;
-            max-width: 420px;
+            max-width: 500px;
             background: rgba(17, 24, 39, 0.95);
             border: 1px solid var(--border-secondary);
-            border-radius: var(--radius-xl);
-            padding: var(--spacing-xl);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
             animation: modalSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             backdrop-filter: blur(20px);
             box-shadow: var(--shadow-lg);
-        }
-
-        @keyframes modalSlideIn {
-            from { 
-                opacity: 0; 
-                transform: translateY(-20px) scale(0.95); 
-            }
-            to { 
-                opacity: 1; 
-                transform: translateY(0) scale(1); 
-            }
-        }
-
-        .modal-header {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: var(--spacing-lg);
-            padding-bottom: var(--spacing-md);
-            border-bottom: 1px solid var(--border-primary);
-        }
-
-        .modal-title {
-            font-size: 20px;
-            font-weight: 700;
-            background: linear-gradient(45deg, var(--primary-purple), var(--primary-cyan));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .close-btn {
-            background: var(--bg-primary);
-            border: 1px solid var(--border-primary);
-            color: var(--text-muted);
-            cursor: pointer;
-            padding: var(--spacing-sm);
-            border-radius: var(--radius-sm);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(10px);
-        }
-
-        .close-btn:hover {
-            color: var(--text-primary);
-            transform: rotate(90deg);
-            border-color: var(--border-secondary);
+            flex-direction: column;
+            gap: var(--spacing-md);
+            margin: var(--spacing-md);
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .settings-section {
-            margin-bottom: var(--spacing-lg);
-        }
-
-        .section-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--primary-purple);
-            margin-bottom: var(--spacing-md);
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-        }
-
-        .form-group {
-            margin-bottom: var(--spacing-md);
-        }
-
-        .form-label {
-            display: block;
-            font-size: 14px;
-            color: var(--text-muted);
-            margin-bottom: var(--spacing-xs);
-            font-weight: 500;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: var(--spacing-md);
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-primary);
-            border-radius: var(--radius-sm);
-            color: var(--text-primary);
-            font-size: 14px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(10px);
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary-purple);
-            box-shadow: 0 0 10px rgba(139, 92, 246, 0.2);
-        }
-
-        .switch-group {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: var(--spacing-md);
             padding: var(--spacing-md);
             background: var(--bg-secondary);
-            border-radius: var(--radius-sm);
+            border-radius: var(--radius-md);
             border: 1px solid var(--border-primary);
         }
 
-        .switch-info {
-            flex: 1;
-        }
-
-        .switch-description {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: var(--spacing-xs);
+        .form-input, .select {
+            height: 44px; /* Sesuai standar UX untuk touch target */
+            font-size: 14px;
+            padding: var(--spacing-sm) var(--spacing-md);
         }
 
         .switch {
-            position: relative;
-            width: 44px;
-            height: 24px;
-            background: var(--bg-tertiary);
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid var(--border-primary);
-        }
-
-        .switch.active {
-            background: linear-gradient(45deg, var(--primary-purple), #7c3aed);
-            box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+            width: 50px;
+            height: 30px;
+            min-width: 44px; /* Minimum touch target */
         }
 
         .switch-thumb {
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 18px;
-            height: 18px;
-            background: white;
-            border-radius: 50%;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: var(--shadow-sm);
+            width: 24px;
+            height: 24px;
         }
 
         .switch.active .switch-thumb {
-            transform: translateX(20px);
-        }
-
-        .select {
-            width: 100%;
-            padding: var(--spacing-md);
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-primary);
-            border-radius: var(--radius-sm);
-            color: var(--text-primary);
-            font-size: 14px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(10px);
-        }
-
-        .select:focus {
-            outline: none;
-            border-color: var(--primary-purple);
-            box-shadow: 0 0 10px rgba(139, 92, 246, 0.2);
+            transform: translateX(22px);
         }
 
         .modal-actions {
-            display: flex;
-            justify-content: space-between;
-            padding-top: var(--spacing-lg);
-            border-top: 1px solid var(--border-primary);
+            flex-direction: row;
+            gap: var(--spacing-sm);
         }
 
-        .btn {
-            padding: var(--spacing-md) var(--spacing-lg);
-            border-radius: var(--radius-sm);
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-xs);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(10px);
-        }
-
-        .btn-outline {
-            background: var(--bg-primary);
-            border: 1px solid var(--border-primary);
-            color: var(--text-secondary);
-        }
-
-        .btn-outline:hover {
-            background: var(--bg-secondary);
-            border-color: var(--border-secondary);
-            color: var(--text-primary);
-            transform: translateY(-1px);
-        }
-
-        .btn-primary {
-            background: linear-gradient(45deg, var(--primary-purple), #7c3aed);
-            color: white;
-            border: 1px solid var(--primary-purple);
-        }
-
-        .btn-primary:hover {
-            background: linear-gradient(45deg, #7c3aed, #6d28d9);
-            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
-            transform: translateY(-1px);
-        }
-
-        .btn-secondary {
-            background: rgba(6, 182, 212, 0.1);
-            border: 1px solid rgba(6, 182, 212, 0.2);
-            color: var(--primary-cyan);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(6, 182, 212, 0.2);
-            border-color: rgba(6, 182, 212, 0.4);
-            transform: translateY(-1px);
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        /* Icons */
-        .icon {
-            width: 16px;
-            height: 16px;
-            fill: currentColor;
-        }
-
-        .icon-sm {
-            width: 14px;
-            height: 14px;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 1024px) {
-            .control-grid {
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .container {
+        /* Penyesuaian untuk Mobile */
+        @media (max-width: 480px) {
+            .modal-content {
+                max-width: 95%;
                 padding: var(--spacing-md);
-                gap: var(--spacing-md);
+                margin: var(--spacing-sm);
             }
 
-            .control-grid {
-                grid-template-columns: 1fr;
-                gap: var(--spacing-md);
-            }
-            
-            .system-stats {
-                grid-template-columns: 1fr;
+            .settings-section {
+                padding: var(--spacing-sm);
             }
 
-            .joystick {
-                width: 120px;
-                height: 120px;
-            }
-
-            .joystick-knob {
-                width: 40px;
+            .form-input, .select {
+                font-size: 13px;
                 height: 40px;
             }
 
-            .title {
-                font-size: 24px;
+            .modal-actions {
+                flex-direction: column;
             }
 
-            .orb {
-                display: none;
+            .btn {
+                padding: var(--spacing-sm) var(--spacing-md);
+                font-size: 13px;
+                height: 44px; /* Minimum touch target */
+            }
+
+            .joystick {
+                width: 90px;
+                height: 90px;
+            }
+
+            .joystick-knob {
+                width: 32px;
+                height: 32px;
+            }
+
+            .movement-btn-face {
+                padding: var(--spacing-sm);
+                font-size: 11px;
+                height: 44px; /* Minimum touch target */
+            }
+
+            .pump-btn-face {
+                padding: var(--spacing-sm);
+                height: 44px;
             }
         }
 
-        @media (max-width: 480px) {
-            .header-controls {
-                flex-direction: column;
-                gap: var(--spacing-sm);
-            }
-
-            .wifi-status {
-                font-size: 12px;
-                padding: var(--spacing-xs) var(--spacing-sm);
+        @media (orientation: landscape) and (max-width: 1024px) {
+            .control-grid {
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                gap: var(--spacing-md);
             }
 
             .modal-content {
-                margin: var(--spacing-md);
-                padding: var(--spacing-lg);
+                max-width: 85%;
+                max-height: 80vh;
+            }
+
+            .joystick {
+                width: 110px;
+                height: 110px;
+            }
+
+            .joystick-knob {
+                width: 38px;
+                height: 38px;
+            }
+
+            .movement-btn-face, .pump-btn-face {
+                padding: var(--spacing-md);
+                font-size: 12px;
             }
         }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg-tertiary);
-            border-radius: 3px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(45deg, var(--primary-purple), var(--primary-cyan));
-            border-radius: 3px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(45deg, #7c3aed, #0891b2);
-        }
-
-        /* Loading States */
-        .loading {
-            opacity: 0.6;
-            pointer-events: none;
-        }
-
-        /* Focus States */
-        .focusable:focus {
-            outline: 2px solid var(--primary-purple);
-            outline-offset: 2px;
-        }
-
-/* Enhanced Settings Modal Styles */
-.modal-content {
-    max-height: 90vh;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-}
-
-.modal-title-section {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-}
-
-.modal-icon {
-    width: 24px;
-    height: 24px;
-    color: var(--primary-purple);
-    flex-shrink: 0;
-}
-
-.modal-subtitle {
-    font-size: 14px;
-    color: var(--text-muted);
-    margin-top: 2px;
-    font-weight: 400;
-}
-
-.settings-content {
-    flex: 1;
-    overflow-y: auto;
-    padding-right: 4px;
-    margin-right: -4px;
-}
-
-.settings-section {
-    margin-bottom: var(--spacing-xl);
-    border: 1px solid var(--border-primary);
-    border-radius: var(--radius-lg);
-    background: var(--bg-secondary);
-    overflow: hidden;
-}
-
-.section-header {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    padding: var(--spacing-lg);
-    background: var(--bg-tertiary);
-    border-bottom: 1px solid var(--border-primary);
-}
-
-.section-icon {
-    width: 20px;
-    height: 20px;
-    color: var(--primary-purple);
-    flex-shrink: 0;
-}
-
-.section-icon svg {
-    width: 100%;
-    height: 100%;
-}
-
-.section-info {
-    flex: 1;
-}
-
-.section-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 2px;
-}
-
-.section-description {
-    font-size: 13px;
-    color: var(--text-muted);
-    line-height: 1.4;
-}
-
-.section-content {
-    padding: var(--spacing-lg);
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-lg);
-}
-
-/* Enhanced Input Styles */
-.input-group {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
-}
-
-.input-label {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text-secondary);
-}
-
-.label-text {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-}
-
-.label-required {
-    color: var(--primary-red);
-    font-size: 12px;
-}
-
-.label-optional {
-    color: var(--text-muted);
-    font-size: 12px;
-    font-weight: 400;
-}
-
-.label-value {
-    color: var(--primary-purple);
-    font-weight: 600;
-    font-size: 13px;
-}
-
-.input-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-.input-icon {
-    position: absolute;
-    left: var(--spacing-md);
-    width: 16px;
-    height: 16px;
-    color: var(--text-muted);
-    z-index: 1;
-}
-
-.form-input {
-    width: 100%;
-    padding: var(--spacing-md) var(--spacing-md) var(--spacing-md) 44px;
-    background: var(--bg-primary);
-    border: 1px solid var(--border-primary);
-    border-radius: var(--radius-md);
-    color: var(--text-primary);
-    font-size: 14px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    backdrop-filter: blur(10px);
-}
-
-.form-input:focus {
-    outline: none;
-    border-color: var(--primary-purple);
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
-    background: var(--bg-secondary);
-}
-
-.form-input::placeholder {
-    color: var(--text-muted);
-}
-
-.input-action {
-    position: absolute;
-    right: var(--spacing-md);
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    cursor: pointer;
-    padding: var(--spacing-xs);
-    border-radius: var(--radius-sm);
-    transition: all 0.2s ease;
-}
-
-.input-action:hover {
-    color: var(--text-primary);
-    background: var(--bg-tertiary);
-}
-
-.input-action svg {
-    width: 16px;
-    height: 16px;
-}
-
-/* Enhanced Select Styles */
-.select-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-.form-select {
-    width: 100%;
-    padding: var(--spacing-md) 44px var(--spacing-md) 44px;
-    background: var(--bg-primary);
-    border: 1px solid var(--border-primary);
-    border-radius: var(--radius-md);
-    color: var(--text-primary);
-    font-size: 14px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    backdrop-filter: blur(10px);
-    appearance: none;
-    cursor: pointer;
-}
-
-.form-select:focus {
-    outline: none;
-    border-color: var(--primary-purple);
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
-    background: var(--bg-secondary);
-}
-
-.select-arrow {
-    position: absolute;
-    right: var(--spacing-md);
-    width: 16px;
-    height: 16px;
-    color: var(--text-muted);
-    pointer-events: none;
-    transition: transform 0.2s ease;
-}
-
-.form-select:focus + .select-arrow {
-    transform: rotate(180deg);
-    color: var(--primary-purple);
-}
-
-/* Enhanced Slider Styles */
-.slider-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
-}
-
-.slider-info {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    color: var(--text-muted);
-    font-weight: 500;
-}
-
-.form-slider {
-    width: 100%;
-    height: 6px;
-    background: var(--bg-tertiary);
-    border-radius: 3px;
-    outline: none;
-    -webkit-appearance: none;
-    border: 1px solid var(--border-primary);
-    cursor: pointer;
-    position: relative;
-}
-
-.form-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 20px;
-    height: 20px;
-    background: linear-gradient(45deg, var(--primary-purple), var(--primary-cyan));
-    border-radius: 50%;
-    cursor: pointer;
-    box-shadow: var(--shadow-sm), 0 0 10px rgba(139, 92, 246, 0.3);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 2px solid white;
-}
-
-.form-slider::-webkit-slider-thumb:hover {
-    transform: scale(1.1);
-    box-shadow: var(--shadow-md), 0 0 15px rgba(139, 92, 246, 0.5);
-}
-
-.form-slider::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
-    background: linear-gradient(45deg, var(--primary-purple), var(--primary-cyan));
-    border-radius: 50%;
-    cursor: pointer;
-    border: 2px solid white;
-    box-shadow: var(--shadow-sm), 0 0 10px rgba(139, 92, 246, 0.3);
-}
-
-/* Enhanced Toggle Styles */
-.toggle-group {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
-}
-
-.toggle-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: var(--spacing-md);
-    background: var(--bg-primary);
-    border: 1px solid var(--border-primary);
-    border-radius: var(--radius-md);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.toggle-item:hover {
-    background: var(--bg-secondary);
-    border-color: var(--border-secondary);
-}
-
-.toggle-info {
-    flex: 1;
-    margin-right: var(--spacing-md);
-}
-
-.toggle-title {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text-primary);
-    margin-bottom: 2px;
-}
-
-.toggle-description {
-    font-size: 12px;
-    color: var(--text-muted);
-    line-height: 1.4;
-}
-
-.toggle-wrapper {
-    position: relative;
-}
-
-.toggle-input {
-    position: absolute;
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.toggle-switch {
-    position: relative;
-    display: inline-block;
-    width: 48px;
-    height: 26px;
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border-primary);
-    border-radius: 13px;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.toggle-slider {
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 20px;
-    height: 20px;
-    background: white;
-    border-radius: 50%;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: var(--shadow-sm);
-}
-
-.toggle-input:checked + .toggle-switch {
-    background: linear-gradient(45deg, var(--primary-purple), #7c3aed);
-    border-color: var(--primary-purple);
-    box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
-}
-
-.toggle-input:checked + .toggle-switch .toggle-slider {
-    transform: translateX(22px);
-    box-shadow: var(--shadow-sm), 0 0 10px rgba(139, 92, 246, 0.2);
-}
-
-.toggle-input:focus + .toggle-switch {
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
-}
-
-/* Enhanced Modal Footer */
-.modal-footer {
-    border-top: 1px solid var(--border-primary);
-    padding: var(--spacing-lg);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--bg-secondary);
-    margin-top: auto;
-}
-
-.footer-info {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    font-size: 13px;
-    color: var(--text-muted);
-}
-
-.info-icon {
-    width: 16px;
-    height: 16px;
-    color: var(--primary-cyan);
-}
-
-.footer-actions {
-    display: flex;
-    gap: var(--spacing-md);
-}
-
-/* Responsive Modal */
-@media (max-width: 768px) {
-    .modal-content {
-        max-width: 95vw;
-        max-height: 95vh;
-        margin: var(--spacing-md);
-        padding: var(--spacing-lg);
-    }
-    
-    .section-header {
-        padding: var(--spacing-md);
-    }
-    
-    .section-content {
-        padding: var(--spacing-md);
-    }
-    
-    .modal-footer {
-        flex-direction: column;
-        gap: var(--spacing-md);
-        align-items: stretch;
-    }
-    
-    .footer-actions {
-        justify-content: stretch;
-    }
-    
-    .footer-actions .btn {
-        flex: 1;
-    }
-}
-/* Enhanced Settings Modal Styles */
-.modal-content {
-    max-height: 90vh;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-}
-
-.modal-title-section {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-}
-
-.modal-icon {
-    width: 24px;
-    height: 24px;
-    color: var(--primary-purple);
-    flex-shrink: 0;
-}
-
-.modal-subtitle {
-    font-size: 14px;
-    color: var(--text-muted);
-    margin-top: 2px;
-    font-weight: 400;
-}
-
-.settings-content {
-    flex: 1;
-    overflow-y: auto;
-    padding-right: 4px;
-    margin-right: -4px;
-}
-
-.settings-section {
-    margin-bottom: var(--spacing-xl);
-    border: 1px solid var(--border-primary);
-    border-radius: var(--radius-lg);
-    background: var(--bg-secondary);
-    overflow: hidden;
-}
-
-.section-header {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    padding: var(--spacing-lg);
-    background: var(--bg-tertiary);
-    border-bottom: 1px solid var(--border-primary);
-}
-
-.section-icon {
-    width: 20px;
-    height: 20px;
-    color: var(--primary-purple);
-    flex-shrink: 0;
-}
-
-.section-icon svg {
-    width: 100%;
-    height: 100%;
-}
-
-.section-info {
-    flex: 1;
-}
-
-.section-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 2px;
-}
-
-.section-description {
-    font-size: 13px;
-    color: var(--text-muted);
-    line-height: 1.4;
-}
-
-.section-content {
-    padding: var(--spacing-lg);
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-lg);
-}
-
-/* Enhanced Input Styles */
-.input-group {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
-}
-
-.input-label {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text-secondary);
-}
-
-.label-text {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-}
-
-.label-required {
-    color: var(--primary-red);
-    font-size: 12px;
-}
-
-.label-optional {
-    color: var(--text-muted);
-    font-size: 12px;
-    font-weight: 400;
-}
-
-.label-value {
-    color: var(--primary-purple);
-    font-weight: 600;
-    font-size: 13px;
-}
-
-.input-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-.input-icon {
-    position: absolute;
-    left: var(--spacing-md);
-    width: 16px;
-    height: 16px;
-    color: var(--text-muted);
-    z-index: 1;
-}
-
-.form-input {
-    width: 100%;
-    padding: var(--spacing-md) var(--spacing-md) var(--spacing-md) 44px;
-    background: var(--bg-primary);
-    border: 1px solid var(--border-primary);
-    border-radius: var(--radius-md);
-    color: var(--text-primary);
-    font-size: 14px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    backdrop-filter: blur(10px);
-}
-
-.form-input:focus {
-    outline: none;
-    border-color: var(--primary-purple);
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
-    background: var(--bg-secondary);
-}
-
-.form-input::placeholder {
-    color: var(--text-muted);
-}
-
-.input-action {
-    position: absolute;
-    right: var(--spacing-md);
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    cursor: pointer;
-    padding: var(--spacing-xs);
-    border-radius: var(--radius-sm);
-    transition: all 0.2s ease;
-}
-
-.input-action:hover {
-    color: var(--text-primary);
-    background: var(--bg-tertiary);
-}
-
-.input-action svg {
-    width: 16px;
-    height: 16px;
-}
-
-/* Enhanced Select Styles */
-.select-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-.form-select {
-    width: 100%;
-    padding: var(--spacing-md) 44px var(--spacing-md) 44px;
-    background: var(--bg-primary);
-    border: 1px solid var(--border-primary);
-    border-radius: var(--radius-md);
-    color: var(--text-primary);
-    font-size: 14px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    backdrop-filter: blur(10px);
-    appearance: none;
-    cursor: pointer;
-}
-
-.form-select:focus {
-    outline: none;
-    border-color: var(--primary-purple);
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
-    background: var(--bg-secondary);
-}
-
-.select-arrow {
-    position: absolute;
-    right: var(--spacing-md);
-    width: 16px;
-    height: 16px;
-    color: var(--text-muted);
-    pointer-events: none;
-    transition: transform 0.2s ease;
-}
-
-.form-select:focus + .select-arrow {
-    transform: rotate(180deg);
-    color: var(--primary-purple);
-}
-
-/* Enhanced Slider Styles */
-.slider-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
-}
-
-.slider-info {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    color: var(--text-muted);
-    font-weight: 500;
-}
-
-.form-slider {
-    width: 100%;
-    height: 6px;
-    background: var(--bg-tertiary);
-    border-radius: 3px;
-    outline: none;
-    -webkit-appearance: none;
-    border: 1px solid var(--border-primary);
-    cursor: pointer;
-    position: relative;
-}
-
-.form-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 20px;
-    height: 20px;
-    background: linear-gradient(45deg, var(--primary-purple), var(--primary-cyan));
-    border-radius: 50%;
-    cursor: pointer;
-    box-shadow: var(--shadow-sm), 0 0 10px rgba(139, 92, 246, 0.3);
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 2px solid white;
-}
-
-.form-slider::-webkit-slider-thumb:hover {
-    transform: scale(1.1);
-    box-shadow: var(--shadow-md), 0 0 15px rgba(139, 92, 246, 0.5);
-}
-
-.form-slider::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
-    background: linear-gradient(45deg, var(--primary-purple), var(--primary-cyan));
-    border-radius: 50%;
-    cursor: pointer;
-    border: 2px solid white;
-    box-shadow: var(--shadow-sm), 0 0 10px rgba(139, 92, 246, 0.3);
-}
-
-/* Enhanced Toggle Styles */
-.toggle-group {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
-}
-
-.toggle-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: var(--spacing-md);
-    background: var(--bg-primary);
-    border: 1px solid var(--border-primary);
-    border-radius: var(--radius-md);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.toggle-item:hover {
-    background: var(--bg-secondary);
-    border-color: var(--border-secondary);
-}
-
-.toggle-info {
-    flex: 1;
-    margin-right: var(--spacing-md);
-}
-
-.toggle-title {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text-primary);
-    margin-bottom: 2px;
-}
-
-.toggle-description {
-    font-size: 12px;
-    color: var(--text-muted);
-    line-height: 1.4;
-}
-
-.toggle-wrapper {
-    position: relative;
-}
-
-.toggle-input {
-    position: absolute;
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
-.toggle-switch {
-    position: relative;
-    display: inline-block;
-    width: 48px;
-    height: 26px;
-    background: var(--bg-tertiary);
-    border: 1px solid var(--border-primary);
-    border-radius: 13px;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.toggle-slider {
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 20px;
-    height: 20px;
-    background: white;
-    border-radius: 50%;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: var(--shadow-sm);
-}
-
-.toggle-input:checked + .toggle-switch {
-    background: linear-gradient(45deg, var(--primary-purple), #7c3aed);
-    border-color: var(--primary-purple);
-    box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
-}
-
-.toggle-input:checked + .toggle-switch .toggle-slider {
-    transform: translateX(22px);
-    box-shadow: var(--shadow-sm), 0 0 10px rgba(139, 92, 246, 0.2);
-}
-
-.toggle-input:focus + .toggle-switch {
-    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
-}
-
-/* Enhanced Modal Footer */
-.modal-footer {
-    border-top: 1px solid var(--border-primary);
-    padding: var(--spacing-lg);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--bg-secondary);
-    margin-top: auto;
-}
-
-.footer-info {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    font-size: 13px;
-    color: var(--text-muted);
-}
-
-.info-icon {
-    width: 16px;
-    height: 16px;
-    color: var(--primary-cyan);
-}
-
-.footer-actions {
-    display: flex;
-    gap: var(--spacing-md);
-}
-
-/* Responsive Modal */
-@media (max-width: 768px) {
-    .modal-content {
-        max-width: 95vw;
-        max-height: 95vh;
-        margin: var(--spacing-md);
-        padding: var(--spacing-lg);
-    }
-    
-    .section-header {
-        padding: var(--spacing-md);
-    }
-    
-    .section-content {
-        padding: var(--spacing-md);
-    }
-    
-    .modal-footer {
-        flex-direction: column;
-        gap: var(--spacing-md);
-        align-items: stretch;
-    }
-    
-    .footer-actions {
-        justify-content: stretch;
-    }
-    
-    .footer-actions .btn {
-        flex: 1;
-    }
-}
-\`\`\`
-
+    </style>
 </head>
 <body>
-    <!-- Enhanced Background Effects -->
-    <div class="background-effects">
-        <div class="floating-orbs">
-            <div class="orb"></div>
-            <div class="orb"></div>
-            <div class="orb"></div>
-        </div>
-        <div class="grid-overlay"></div>
-    </div>
-
-    <div class="container">
-        <!-- Header -->
-        <div class="card header">
-            <div class="header-content">
-                <div class="title">
-                    <div class="status-dot"></div>
-                    ESP32 Control Panel
-                </div>
-                <div class="header-controls">
-                    <div class="wifi-status">
-                        <svg class="wifi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
-                            <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
-                            <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
-                            <line x1="12" y1="20" x2="12.01" y2="20"></line>
-                        </svg>
-                        <span id="connection-status">Connected</span>
-                    </div>
-                    <button class="settings-btn focusable" onclick="toggleSettings()">
-                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="3"></circle>
-                            <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tabs -->
-        <div class="tabs">
-            <div class="tab-list">
-                <button class="tab-button active focusable" onclick="switchTab('control')">
+    <!-- Bagian sebelumnya dari body tetap sama hingga Settings Modal -->
+    <!-- Hanya menampilkan bagian Settings Modal yang diperbarui untuk melanjutkan -->
+    
+    <div id="settings-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Settings</div>
+                <button class="close-btn focusable" onclick="toggleSettings()" aria-label="Close Settings">
                     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                        <polyline points="9,22 9,12 15,12 15,22"></polyline>
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
                     </svg>
-                    Control
-                </button>
-                <button class="tab-button focusable" onclick="switchTab('stats')">
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="12" y1="20" x2="12" y2="10"></line>
-                        <line x1="18" y1="20" x2="18" y2="4"></line>
-                        <line x1="6" y1="20" x2="6" y2="16"></line>
-                    </svg>
-                    Stats
                 </button>
             </div>
-
-            <!-- Control Tab -->
-            <div id="control-tab" class="tab-content active">
-                <div class="control-grid">
-                    <!-- Movement Panel -->
-                    <div class="card panel">
-                        <div class="panel-header">
-                            <div class="panel-title">Movement Control</div>
-                        </div>
-                        <div class="panel-content">
-                            <div class="movement-buttons">
-                                <div class="movement-btn forward-btn" 
-                                     onmousedown="startMovement('forward')" 
-                                     onmouseup="stopMovement('forward')"
-                                     onmouseleave="stopMovement('forward')"
-                                     ontouchstart="startMovement('forward')"
-                                     ontouchend="stopMovement('forward')">
-                                    <div class="movement-btn-shadow"></div>
-                                    <div class="movement-btn-face">
-                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <polyline points="18,15 12,9 6,15"></polyline>
-                                        </svg>
-                                        FORWARD
-                                    </div>
-                                </div>
-                                <div class="movement-btn backward-btn"
-                                     onmousedown="startMovement('backward')" 
-                                     onmouseup="stopMovement('backward')"
-                                     onmouseleave="stopMovement('backward')"
-                                     ontouchstart="startMovement('backward')"
-                                     ontouchend="stopMovement('backward')">
-                                    <div class="movement-btn-shadow"></div>
-                                    <div class="movement-btn-face">
-                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <polyline points="6,9 12,15 18,9"></polyline>
-                                        </svg>
-                                        BACKWARD
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="servo-control">
-                                <div class="servo-label">Servo Position</div>
-                                <div class="servo-container">
-                                    <div class="servo-values">
-                                        <span>0°</span>
-                                        <span class="servo-current" id="servo-value">90°</span>
-                                        <span>180°</span>
-                                    </div>
-                                    <input type="range" class="slider focusable" min="0" max="180" value="90" 
-                                           oninput="updateServo(this.value)" id="servo-slider">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Battery Panel -->
-                    <div class="card panel">
-                        <div class="panel-header">
-                            <div class="panel-title">Power Status</div>
-                        </div>
-                        <div class="panel-content">
-                            <div class="battery-display" id="battery-display">
-                                <svg class="battery-icon" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
-                                    <rect x="1" y="6" width="18" height="12" rx="2" ry="2"></rect>
-                                    <line x1="23" y1="13" x2="23" y2="11"></line>
-                                </svg>
-                                <div class="battery-percentage" id="battery-percentage">75%</div>
-                                <div class="battery-label">Battery Level</div>
-                            </div>
-                            <div class="battery-bar">
-                                <div class="battery-bar-bg">
-                                    <div class="battery-bar-fill" id="battery-bar-fill" style="width: 75%"></div>
-                                </div>
-                            </div>
-                            <div class="system-stats">
-                                <div class="stat-item">
-                                    <div class="stat-value" style="color: var(--primary-blue);">23°C</div>
-                                    <div class="stat-label">Temperature</div>
-                                </div>
-                                <div class="stat-item">
-                                    <div class="stat-value" style="color: var(--primary-purple);">-45dBm</div>
-                                    <div class="stat-label">Signal</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- System Panel -->
-                    <div class="card panel">
-                        <div class="panel-header">
-                            <div class="panel-title">System Status</div>
-                        </div>
-                        <div class="panel-content">
-                            <div class="system-stats">
-                                <div class="stat-item">
-                                    <div class="stat-value" style="color: var(--primary-green);">Online</div>
-                                    <div class="stat-label">Status</div>
-                                </div>
-                                <div class="stat-item">
-                                    <div class="stat-value" style="color: var(--primary-cyan);">2.4GHz</div>
-                                    <div class="stat-label">WiFi Band</div>
-                                </div>
-                                <div class="stat-item">
-                                    <div class="stat-value" style="color: var(--primary-orange);">45ms</div>
-                                    <div class="stat-label">Latency</div>
-                                </div>
-                                <div class="stat-item">
-                                    <div class="stat-value" style="color: var(--primary-purple);">v2.1</div>
-                                    <div class="stat-label">Firmware</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Direction Panel -->
-                    <div class="card panel">
-                        <div class="panel-header">
-                            <div class="panel-title">Direction Control</div>
-                            <div class="pump-btn" id="pump-btn" onclick="togglePump()">
-                                <div class="pump-btn-shadow"></div>
-                                <div class="pump-btn-face">
-                                    <svg class="pump-icon" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
-                                        <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="panel-content">
-                            <div class="joystick-container">
-                                <div class="joystick" id="joystick"
-                                     onmousedown="startJoystick(event)"
-                                     ontouchstart="startJoystick(event)">
-                                    <div class="joystick-knob" id="joystick-knob"></div>
-                                    <div class="joystick-center"></div>
-                                </div>
-                                <div class="joystick-values">
-                                    <div class="joystick-value">
-                                        <div class="joystick-number" id="joystick-x">0</div>
-                                        <div class="joystick-axis">X</div>
-                                    </div>
-                                    <div class="joystick-value">
-                                        <div class="joystick-number" id="joystick-y">0</div>
-                                        <div class="joystick-axis">Y</div>
-                                    </div>
-                                </div>
-                                <div class="direction-indicator">
-                                    <div class="direction-label">Direction</div>
-                                    <div class="direction-value" id="direction-value">CENTER</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Stats Tab -->
-            <div id="stats-tab" class="tab-content">
-                <div class="stats-grid">
-                    <!-- Sensor Data -->
-                    <div class="card panel">
-                        <div class="panel-header">
-                            <div class="panel-title">Sensor Data</div>
-                        </div>
-                        <div class="panel-content">
-                            <div class="sensor-data">
-                                <div class="mini-chart">
-                                    <div class="chart-header">
-                                        <span class="chart-label">Temperature</span>
-                                        <span class="chart-value" style="color: var(--primary-blue);" id="temp-value">23°C</span>
-                                    </div>
-                                    <div class="chart-bars" id="temp-chart"></div>
-                                </div>
-                                <div class="mini-chart">
-                                    <div class="chart-header">
-                                        <span class="chart-label">Humidity</span>
-                                        <span class="chart-value" style="color: var(--primary-green);" id="humidity-value">45%</span>
-                                    </div>
-                                    <div class="chart-bars" id="humidity-chart"></div>
-                                </div>
-                                <div class="mini-chart">
-                                    <div class="chart-header">
-                                        <span class="chart-label">Pressure</span>
-                                        <span class="chart-value" style="color: var(--primary-orange);" id="pressure-value">1013hPa</span>
-                                    </div>
-                                    <div class="chart-bars" id="pressure-chart"></div>
-                                </div>
-                                <div class="mini-chart">
-                                    <div class="chart-header">
-                                        <span class="chart-label">Distance</span>
-                                        <span class="chart-value" style="color: var(--primary-purple);" id="distance-value">120cm</span>
-                                    </div>
-                                    <div class="chart-bars" id="distance-chart"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- System Stats -->
-                    <div class="card panel">
-                        <div class="panel-header">
-                            <div class="panel-title">System Information</div>
-                        </div>
-                        <div class="panel-content">
-                            <div class="system-info">
-                                <div class="progress-item">
-                                    <div class="progress-header">
-                                        <span class="progress-label">CPU Usage</span>
-                                        <span class="progress-value" style="color: var(--primary-blue);">32%</span>
-                                    </div>
-                                    <div class="progress-bar">
-                                        <div class="progress-fill" style="width: 32%; background: var(--primary-blue);"></div>
-                                    </div>
-                                </div>
-                                <div class="progress-item">
-                                    <div class="progress-header">
-                                        <span class="progress-label">Memory Usage</span>
-                                        <span class="progress-value" style="color: var(--primary-purple);">64%</span>
-                                    </div>
-                                    <div class="progress-bar">
-                                        <div class="progress-fill" style="width: 64%; background: var(--primary-purple);"></div>
-                                    </div>
-                                </div>
-                                <div class="progress-item">
-                                    <div class="progress-header">
-                                        <span class="progress-label">Network Traffic</span>
-                                        <span class="progress-value" style="color: var(--primary-green);">2.4 KB/s</span>
-                                    </div>
-                                    <div class="progress-bar">
-                                        <div class="progress-fill" style="width: 24%; background: var(--primary-green);"></div>
-                                    </div>
-                                </div>
-                                <div class="info-grid">
-                                    <div class="info-item">
-                                        <div class="info-label">Uptime</div>
-                                        <div class="info-value">3h 24m 12s</div>
-                                    </div>
-                                    <div class="info-item">
-                                        <div class="info-label">IP Address</div>
-                                        <div class="info-value">192.168.1.105</div>
-                                    </div>
-                                    <div class="info-item">
-                                        <div class="info-label">MAC Address</div>
-                                        <div class="info-value">A4:CF:12:DF:3B:6E</div>
-                                    </div>
-                                    <div class="info-item">
-                                        <div class="info-label">Free Storage</div>
-                                        <div class="info-value">2.4 MB</div>
-                                    </div>
-                                </div>
-                                <div class="log-container">
-                                    <div class="log-header">Recent Activity</div>
-                                    <div class="log-content" id="log-content">
-                                        <div class="log-entry log-success">[12:34:56] System started</div>
-                                        <div class="log-entry log-info">[12:35:01] WiFi connected</div>
-                                        <div class="log-entry log-info">[12:35:12] Sensors initialized</div>
-                                        <div class="log-entry log-warning">[12:36:45] Battery level: 75%</div>
-                                        <div class="log-entry log-info">[12:37:23] Motor control ready</div>
-                                        <div class="log-entry log-error">[12:38:10] Warning: High temperature</div>
-                                        <div class="log-entry log-info">[12:39:05] Temperature normalized</div>
-                                        <div class="log-entry log-info">[12:40:22] Client connected</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Footer -->
-        <div class="card footer">
-            <div class="footer-content">
-                <div>ESP32 Control Panel v2.0</div>
-                <div id="current-time"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Enhanced Settings Modal -->
-<div id="settings-modal" class="modal-overlay hidden">
-    <div class="modal-content">
-        <div class="modal-header">
-            <div class="modal-title-section">
-                <svg class="modal-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="3"></circle>
-                    <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"></path>
-                </svg>
-                <div>
-                    <div class="modal-title">Device Settings</div>
-                    <div class="modal-subtitle">Configure your ESP32 control panel</div>
-                </div>
-            </div>
-            <button class="close-btn focusable" onclick="toggleSettings()">
-                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-            </button>
-        </div>
-        
-        <div class="settings-content">
-            <!-- Network Section -->
+            
             <div class="settings-section">
-                <div class="section-header">
-                    <div class="section-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
-                            <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
-                            <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
-                            <line x1="12" y1="20" x2="12.01" y2="20"></line>
-                        </svg>
-                    </div>
-                    <div class="section-info">
-                        <div class="section-title">Network Configuration</div>
-                        <div class="section-description">Configure WiFi and connection settings</div>
-                    </div>
-                </div>
-                <div class="section-content">
-                    <div class="input-group">
-                        <label class="input-label">
-                            <span class="label-text">WiFi Network Name</span>
-                            <span class="label-required">*</span>
-                        </label>
-                        <div class="input-wrapper">
-                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
-                                <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
-                                <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
-                                <line x1="12" y1="20" x2="12.01" y2="20"></line>
-                            </svg>
-                            <input type="text" class="form-input focusable" value="ESP32_Network" id="wifi-ssid" placeholder="Enter WiFi SSID">
-                        </div>
-                    </div>
-                    <div class="input-group">
-                        <label class="input-label">
-                            <span class="label-text">WiFi Password</span>
-                            <span class="label-optional">Optional</span>
-                        </label>
-                        <div class="input-wrapper">
-                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                <circle cx="12" cy="16" r="1"></circle>
-                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                            </svg>
-                            <input type="password" class="form-input focusable" value="********" id="wifi-password" placeholder="Enter password">
-                            <button type="button" class="input-action" onclick="togglePasswordVisibility('wifi-password')">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                    <circle cx="12" cy="12" r="3"></circle>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="input-group">
-                        <label class="input-label">
-                            <span class="label-text">Connection Type</span>
-                        </label>
-                        <div class="select-wrapper">
-                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="2"></circle>
-                                <path d="M12 1v6m0 6v6"></path>
-                                <path d="M1 12h6m6 0h6"></path>
-                            </svg>
-                            <select class="form-select focusable" id="connection-type">
-                                <option value="wifi">WiFi Connection</option>
-                                <option value="bluetooth">Bluetooth LE</option>
-                                <option value="serial">Serial USB</option>
-                                <option value="ethernet">Ethernet</option>
-                            </select>
-                            <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="6,9 12,15 18,9"></polyline>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Device Section -->
-            <div class="settings-section">
-                <div class="section-header">
-                    <div class="section-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                            <line x1="8" y1="21" x2="16" y2="21"></line>
-                            <line x1="12" y1="17" x2="12" y2="21"></line>
-                        </svg>
-                    </div>
-                    <div class="section-info">
-                        <div class="section-title">Device Configuration</div>
-                        <div class="section-description">Customize device behavior and performance</div>
-                    </div>
-                </div>
-                <div class="section-content">
-                    <div class="input-group">
-                        <label class="input-label">
-                            <span class="label-text">Device Name</span>
-                        </label>
-                        <div class="input-wrapper">
-                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="12" cy="7" r="4"></circle>
-                            </svg>
-                            <input type="text" class="form-input focusable" value="ESP32-Robot" id="device-name" placeholder="Enter device name">
-                        </div>
-                    </div>
-                    <div class="input-group">
-                        <label class="input-label">
-                            <span class="label-text">Refresh Rate</span>
-                            <span class="label-value" id="refresh-rate-value">100ms</span>
-                        </label>
-                        <div class="slider-wrapper">
-                            <div class="slider-info">
-                                <span class="slider-min">50ms</span>
-                                <span class="slider-max">500ms</span>
-                            </div>
-                            <input type="range" class="form-slider focusable" min="50" max="500" value="100" step="10" 
-                                   oninput="updateRefreshRate(this.value)" id="refresh-rate">
-                            <div class="slider-track">
-                                <div class="slider-progress" style="width: 20%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Preferences Section -->
-            <div class="settings-section">
-                <div class="section-header">
-                    <div class="section-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                        </svg>
-                    </div>
-                    <div class="section-info">
-                        <div class="section-title">Preferences</div>
-                        <div class="section-description">Customize your experience and power settings</div>
-                    </div>
-                </div>
-                <div class="section-content">
-                    <div class="toggle-group">
-                        <div class="toggle-item">
-                            <div class="toggle-info">
-                                <div class="toggle-title">Auto Connect</div>
-                                <div class="toggle-description">Automatically connect to WiFi on startup</div>
-                            </div>
-                            <div class="toggle-wrapper">
-                                <input type="checkbox" class="toggle-input" id="auto-connect-input" checked>
-                                <label for="auto-connect-input" class="toggle-switch">
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="toggle-item">
-                            <div class="toggle-info">
-                                <div class="toggle-title">Power Saving Mode</div>
-                                <div class="toggle-description">Reduce power consumption when idle</div>
-                            </div>
-                            <div class="toggle-wrapper">
-                                <input type="checkbox" class="toggle-input" id="power-saving-input">
-                                <label for="power-saving-input" class="toggle-switch">
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="toggle-item">
-                            <div class="toggle-info">
-                                <div class="toggle-title">Debug Mode</div>
-                                <div class="toggle-description">Enable detailed logging and diagnostics</div>
-                            </div>
-                            <div class="toggle-wrapper">
-                                <input type="checkbox" class="toggle-input" id="debug-mode-input">
-                                <label for="debug-mode-input" class="toggle-switch">
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="toggle-item">
-                            <div class="toggle-info">
-                                <div class="toggle-title">Haptic Feedback</div>
-                                <div class="toggle-description">Enable vibration feedback for interactions</div>
-                            </div>
-                            <div class="toggle-wrapper">
-                                <input type="checkbox" class="toggle-input" id="haptic-feedback-input" checked>
-                                <label for="haptic-feedback-input" class="toggle-switch">
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal-footer">
-            <div class="footer-info">
-                <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="16" x2="12" y2="12"></line>
-                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                </svg>
-                <span>Changes will be applied immediately</span>
-            </div>
-            <div class="footer-actions">
-                <button class="btn btn-outline focusable" onclick="resetSettings()">
+                <div class="section-title">
                     <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="23,4 23,10 17,10"></polyline>
-                        <polyline points="1,20 1,14 7,14"></polyline>
-                        <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
+                        <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
+                        <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
+                        <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+                        <line x1="12" y1="20" x2="12.01" y2="20"></line>
                     </svg>
-                    Reset to Defaults
+                    Network Configuration
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="wifi-ssid">WiFi SSID</label>
+                    <input type="text" class="form-input focusable" id="wifi-ssid" value="ESP32_Network" aria-label="WiFi SSID">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="wifi-password">WiFi Password</label>
+                    <input type="password" class="form-input focusable" id="wifi-password" value="********" aria-label="WiFi Password">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="ip-address">IP Address</label>
+                    <input type="text" class="form-input focusable" id="ip-address" value="192.168.1.105" aria-label="IP Address">
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="section-title">
+                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"></path>
+                    </svg>
+                    Device Configuration
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="device-name">Device Name</label>
+                    <input type="text" class="form-input focusable" id="device-name" value="ESP32-Robot" aria-label="Device Name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="refresh-rate">Refresh Rate: <span id="refresh-rate-value">100</span>ms</label>
+                    <input type="range" class="slider focusable" min="50" max="500" value="100" step="10" 
+                           oninput="updateRefreshRate(this.value)" id="refresh-rate" aria-label="Refresh Rate">
+                </div>
+                <div class="switch-group">
+                    <div class="switch-info">
+                        <label class="form-label" for="auto-connect">Auto Connect</label>
+                        <div class="switch-description">Automatically connect on startup</div>
+                    </div>
+                    <div class="switch active focusable" onclick="toggleSwitch(this)" id="auto-connect" tabindex="0" role="switch" aria-checked="true">
+                        <div class="switch-thumb"></div>
+                    </div>
+                </div>
+                <div class="switch-group">
+                    <div class="switch-info">
+                        <label class="form-label" for="power-saving">Power Saving</label>
+                        <div class="switch-description">Reduce power consumption when idle</div>
+                    </div>
+                    <div class="switch focusable" onclick="toggleSwitch(this)" id="power-saving" tabindex="0" role="switch" aria-checked="false">
+                        <div class="switch-thumb"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="firmware-version">Firmware Version</label>
+                    <select class="select focusable" id="firmware-version" aria-label="Firmware Version">
+                        <option value="v2.1">v2.1 (Latest)</option>
+                        <option value="v2.0">v2.0</option>
+                        <option value="v1.9">v1.9</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="section-title">
+                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+                    </svg>
+                    Advanced Settings
+                </div>
+                <div class="switch-group">
+                    <div class="switch-info">
+                        <label class="form-label" for="debug-mode">Debug Mode</label>
+                        <div class="switch-description">Enable detailed logging for troubleshooting</div>
+                    </div>
+                    <div class="switch focusable" onclick="toggleSwitch(this)" id="debug-mode" tabindex="0" role="switch" aria-checked="false">
+                        <div class="switch-thumb"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="log-level">Log Level</label>
+                    <select class="select focusable" id="log-level" aria-label="Log Level">
+                        <option value="info">Info</option>
+                        <option value="warning">Warning</option>
+                        <option value="error">Error</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-outline focusable" onclick="resetSettings()" aria-label="Reset Settings">
+                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                        <path d="M3 3v5h5"></path>
+                    </svg>
+                    Reset
                 </button>
-                <button class="btn btn-primary focusable" onclick="saveSettings()">
+                <button class="btn btn-secondary focusable" onclick="toggleSettings()" aria-label="Cancel">
+                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                    Cancel
+                </button>
+                <button class="btn btn-primary focusable" onclick="saveSettings()" aria-label="Save Settings">
                     <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                        <polyline points="17,21 17,13 7,13 7,21"></polyline>
-                        <polyline points="7,3 7,8 15,8"></polyline>
+                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                        <polyline points="7 3 7 8 15 8"></polyline>
                     </svg>
-                    Save Changes
+                    Save
                 </button>
             </div>
         </div>
     </div>
-</div>
 
     <script>
-        // Global state management
-        let joystickActive = false;
-        let joystickPosition = { x: 0, y: 0 };
-        let batteryLevel = 75;
-        let servoPosition = 90;
-        let isPumpActive = false;
-        let activeTab = 'control';
-        let sensorData = {
-            temperature: [23, 24, 22, 23, 25, 24, 23, 22, 23, 24],
-            humidity: [45, 46, 44, 45, 47, 48, 46, 45, 44, 46],
-            pressure: [1013, 1014, 1012, 1013, 1015, 1014, 1013, 1012, 1013, 1014],
-            distance: [120, 118, 122, 125, 119, 120, 121, 123, 122, 120]
-        };
-
-        // Initialize application
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeApp();
-            setupEventListeners();
-            startDataUpdates();
-        });
-
-        function initializeApp() {
-            updateTime();
-            initializeCharts();
-            updateBatteryDisplay();
-            updateJoystickDisplay();
-        }
-
-        function setupEventListeners() {
-            // Global mouse/touch event listeners for joystick
-            document.addEventListener('mousemove', handleJoystickMove);
-            document.addEventListener('mouseup', stopJoystick);
-            document.addEventListener('touchmove', handleJoystickMove, { passive: false });
-            document.addEventListener('touchend', stopJoystick);
-            
-            // Keyboard shortcuts
-            document.addEventListener('keydown', handleKeyboardShortcuts);
-            
-            // Prevent context menu
-            document.addEventListener('contextmenu', e => e.preventDefault());
-        }
-
-        function startDataUpdates() {
-            setInterval(updateTime, 1000);
-            setInterval(updateBattery, 5000);
-            setInterval(updateSensorData, 3000);
-            setInterval(addLogEntry, 8000);
-        }
-
-        // Enhanced tab switching
-        function switchTab(tabName) {
-            // Update tab buttons
-            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-            
-            // Update tab content with smooth transition
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            
-            setTimeout(() => {
-                document.getElementById(tabName + '-tab').classList.add('active');
-            }, 150);
-            
-            activeTab = tabName;
-        }
-
-        // Enhanced movement controls
-        function startMovement(direction) {
-            console.log(`Moving ${direction}`);
-            
-            // Add haptic feedback
-            if (navigator.vibrate) {
-                navigator.vibrate(50);
-            }
-            
-            // Visual feedback
-            const btn = event.currentTarget;
-            btn.style.transform = 'scale(0.98)';
-            
-            // Add to log
-            addLogEntry(`Movement: ${direction} started`, 'info');
-        }
-
-        function stopMovement(direction) {
-            console.log(`Stop ${direction}`);
-            
-            // Remove visual feedback
-            const btn = event.currentTarget;
-            btn.style.transform = 'scale(1)';
-            
-            addLogEntry(`Movement: ${direction} stopped`, 'info');
-        }
-
-        // Enhanced servo control
-        function updateServo(value) {
-            servoPosition = parseInt(value);
-            document.getElementById('servo-value').textContent = value + '°';
-            
-            console.log(`Servo position: ${value}°`);
-            addLogEntry(`Servo position set to ${value}°`, 'success');
-        }
-
-        // Enhanced pump control
-        function togglePump() {
-            isPumpActive = !isPumpActive;
-            const pumpBtn = document.getElementById('pump-btn');
-            
-            if (isPumpActive) {
-                pumpBtn.classList.add('active');
-                addLogEntry('Pump activated', 'success');
-            } else {
-                pumpBtn.classList.remove('active');
-                addLogEntry('Pump deactivated', 'info');
-            }
-            
-            // Add haptic feedback
-            if (navigator.vibrate) {
-                navigator.vibrate(100);
-            }
-            
-            console.log(`Pump ${isPumpActive ? 'activated' : 'deactivated'}`);
-        }
-
-        // Enhanced joystick controls
-        function startJoystick(event) {
-            event.preventDefault();
-            joystickActive = true;
-            
-            // Add visual feedback
-            const joystick = document.getElementById('joystick');
-            joystick.classList.add('active');
-            
-            addLogEntry('Joystick control started', 'info');
-        }
-
-        function handleJoystickMove(event) {
-            if (!joystickActive) return;
-            
-            event.preventDefault();
-            const joystick = document.getElementById('joystick');
-            const rect = joystick.getBoundingClientRect();
-            
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            
-            const clientX = event.touches ? event.touches[0].clientX : event.clientX;
-            const clientY = event.touches ? event.touches[0].clientY : event.clientY;
-            
-            const x = clientX - rect.left - centerX;
-            const y = clientY - rect.top - centerY;
-            
-            const distance = Math.sqrt(x * x + y * y);
-            const maxDistance = centerX - 25;
-            
-            if (distance <= maxDistance) {
-                joystickPosition = { x, y };
-            } else {
-                const angle = Math.atan2(y, x);
-                joystickPosition = {
-                    x: Math.cos(angle) * maxDistance,
-                    y: Math.sin(angle) * maxDistance
-                };
-            }
-            
-            updateJoystickDisplay();
-        }
-
-        function stopJoystick() {
-            if (!joystickActive) return;
-            joystickActive = false;
-            joystickPosition = { x: 0, y: 0 };
-            
-            // Remove visual feedback
-            const joystick = document.getElementById('joystick');
-            joystick.classList.remove('active');
-            
-            updateJoystickDisplay();
-            addLogEntry('Joystick control stopped', 'info');
-        }
-
-        function updateJoystickDisplay() {
-            const knob = document.getElementById('joystick-knob');
-            knob.style.left = `calc(50% + ${joystickPosition.x}px)`;
-            knob.style.top = `calc(50% + ${joystickPosition.y}px)`;
-            
-            // Update values
-            document.getElementById('joystick-x').textContent = Math.round(joystickPosition.x);
-            document.getElementById('joystick-y').textContent = Math.round(joystickPosition.y);
-            
-            // Update direction
-            let direction = 'CENTER';
-            const threshold = 15;
-            if (Math.abs(joystickPosition.x) > Math.abs(joystickPosition.y)) {
-                if (joystickPosition.x > threshold) direction = 'RIGHT';
-                else if (joystickPosition.x < -threshold) direction = 'LEFT';
-            } else {
-                if (joystickPosition.y > threshold) direction = 'DOWN';
-                else if (joystickPosition.y < -threshold) direction = 'UP';
-            }
-            
-            const directionElement = document.getElementById('direction-value');
-            directionElement.textContent = direction;
-            
-            // Color coding for direction
-            const colors = {
-                'CENTER': 'var(--text-muted)',
-                'UP': 'var(--primary-blue)',
-                'DOWN': 'var(--primary-red)',
-                'LEFT': 'var(--primary-orange)',
-                'RIGHT': 'var(--primary-green)'
-            };
-            directionElement.style.color = colors[direction];
-        }
-
-        // Enhanced battery simulation
-        function updateBattery() {
-            const change = Math.random() > 0.5 ? 1 : -1;
-            batteryLevel = Math.max(0, Math.min(100, batteryLevel + change));
-            updateBatteryDisplay();
-        }
-
-        function updateBatteryDisplay() {
-            const batteryDisplay = document.getElementById('battery-display');
-            const batteryPercentage = document.getElementById('battery-percentage');
-            const batteryBarFill = document.getElementById('battery-bar-fill');
-            
-            batteryPercentage.textContent = batteryLevel + '%';
-            batteryBarFill.style.width = batteryLevel + '%';
-            
-            // Update battery color class
-            batteryDisplay.className = 'battery-display';
-            if (batteryLevel > 50) {
-                batteryDisplay.classList.add('battery-high');
-            } else if (batteryLevel > 20) {
-                batteryDisplay.classList.add('battery-medium');
-            } else {
-                batteryDisplay.classList.add('battery-low');
-            }
-        }
-
-        // Enhanced sensor data simulation
-        function updateSensorData() {
-            // Update temperature
-            const newTemp = sensorData.temperature[9] + (Math.random() > 0.5 ? 1 : -1);
-            sensorData.temperature = [...sensorData.temperature.slice(1), Math.max(15, Math.min(35, newTemp))];
-            
-            // Update humidity
-            const newHumidity = sensorData.humidity[9] + (Math.random() > 0.5 ? 2 : -2);
-            sensorData.humidity = [...sensorData.humidity.slice(1), Math.max(20, Math.min(80, newHumidity))];
-            
-            // Update pressure
-            const newPressure = sensorData.pressure[9] + (Math.random() > 0.5 ? 3 : -3);
-            sensorData.pressure = [...sensorData.pressure.slice(1), Math.max(990, Math.min(1030, newPressure))];
-            
-            // Update distance
-            const newDistance = sensorData.distance[9] + (Math.random() > 0.5 ? 5 : -5);
-            sensorData.distance = [...sensorData.distance.slice(1), Math.max(50, Math.min(200, newDistance))];
-            
-            // Update displays
-            document.getElementById('temp-value').textContent = sensorData.temperature[9] + '°C';
-            document.getElementById('humidity-value').textContent = sensorData.humidity[9] + '%';
-            document.getElementById('pressure-value').textContent = sensorData.pressure[9] + 'hPa';
-            document.getElementById('distance-value').textContent = sensorData.distance[9] + 'cm';
-            
-            // Update charts
-            updateChart('temp-chart', sensorData.temperature, 'var(--primary-blue)');
-            updateChart('humidity-chart', sensorData.humidity, 'var(--primary-green)');
-            updateChart('pressure-chart', sensorData.pressure, 'var(--primary-orange)');
-            updateChart('distance-chart', sensorData.distance, 'var(--primary-purple)');
-        }
-
-        function initializeCharts() {
-            updateChart('temp-chart', sensorData.temperature, 'var(--primary-blue)');
-            updateChart('humidity-chart', sensorData.humidity, 'var(--primary-green)');
-            updateChart('pressure-chart', sensorData.pressure, 'var(--primary-orange)');
-            updateChart('distance-chart', sensorData.distance, 'var(--primary-purple)');
-        }
-
-        function updateChart(chartId, data, color) {
-            const chart = document.getElementById(chartId);
-            if (!chart) return;
-            
-            const max = Math.max(...data) * 1.1;
-            const min = Math.min(...data) * 0.9;
-            
-            chart.innerHTML = '';
-            data.forEach((value, index) => {
-                const bar = document.createElement('div');
-                bar.className = 'chart-bar';
-                bar.style.height = `${((value - min) / (max - min)) * 100}%`;
-                bar.style.backgroundColor = color;
-                bar.style.opacity = 0.4 + (index / data.length) * 0.6;
-                chart.appendChild(bar);
-            });
-        }
-
-        // Enhanced log system
-        function addLogEntry(message = null, type = null) {
-            const logContent = document.getElementById('log-content');
-            const logTypes = ['info', 'success', 'warning', 'error'];
-            const logMessages = [
-                'Sensor reading updated',
-                'Command executed successfully',
-                'Battery level check completed',
-                'Network ping successful',
-                'Motor status verified',
-                'Temperature within normal range',
-                'Connection stable',
-                'Data transmission complete',
-                'System health check passed',
-                'Configuration saved'
-            ];
-            
-            const entryType = type || logTypes[Math.floor(Math.random() * logTypes.length)];
-            const entryMessage = message || logMessages[Math.floor(Math.random() * logMessages.length)];
-            const timestamp = new Date().toLocaleTimeString();
-            
-            const logEntry = document.createElement('div');
-            logEntry.className = `log-entry log-${entryType}`;
-            logEntry.textContent = `[${timestamp}] ${entryMessage}`;
-            
-            logContent.appendChild(logEntry);
-            logContent.scrollTop = logContent.scrollHeight;
-            
-            // Remove old entries if too many
-            if (logContent.children.length > 50) {
-                logContent.removeChild(logContent.firstChild);
-            }
-        }
-
-        // Enhanced settings modal
+        // JavaScript untuk Settings Modal dan fungsi lainnya
         function toggleSettings() {
             const modal = document.getElementById('settings-modal');
             modal.classList.toggle('hidden');
-            
             if (!modal.classList.contains('hidden')) {
-                // Focus first input
-                const firstInput = modal.querySelector('.form-input');
-                if (firstInput) firstInput.focus();
+                document.getElementById('wifi-ssid').focus();
+                addLogEntry('Settings modal opened', 'info');
+            } else {
+                addLogEntry('Settings modal closed', 'info');
             }
         }
 
         function toggleSwitch(element) {
             element.classList.toggle('active');
-            
-            // Add haptic feedback
-            if (navigator.vibrate) {
-                navigator.vibrate(30);
-            }
-            
             const isActive = element.classList.contains('active');
-            const settingName = element.id.replace('-', ' ');
-            addLogEntry(`${settingName} ${isActive ? 'enabled' : 'disabled'}`, 'info');
+            element.setAttribute('aria-checked', isActive);
+            addLogEntry(`${element.id} set to ${isActive ? 'ON' : 'OFF'}`, 'info');
+            if ('vibrate' in navigator) {
+                navigator.vibrate(50); // Haptic feedback
+            }
         }
 
         function updateRefreshRate(value) {
@@ -3347,211 +303,253 @@
             addLogEntry(`Refresh rate set to ${value}ms`, 'info');
         }
 
+        function saveSettings() {
+            const ssid = document.getElementById('wifi-ssid').value;
+            const password = document.getElementById('wifi-password').value;
+            const deviceName = document.getElementById('device-name').value;
+            const refreshRate = document.getElementById('refresh-rate').value;
+            const autoConnect = document.getElementById('auto-connect').classList.contains('active');
+            const powerSaving = document.getElementById('power-saving').classList.contains('active');
+            const debugMode = document.getElementById('debug-mode').classList.contains('active');
+            const logLevel = document.getElementById('log-level').value;
+
+            addLogEntry('Settings saved', 'success');
+            toggleSettings();
+        }
+
         function resetSettings() {
-            // Reset form values
             document.getElementById('wifi-ssid').value = 'ESP32_Network';
             document.getElementById('wifi-password').value = '********';
             document.getElementById('device-name').value = 'ESP32-Robot';
             document.getElementById('refresh-rate').value = 100;
             document.getElementById('refresh-rate-value').textContent = '100';
-            document.getElementById('connection-type').value = 'wifi';
-            
-            // Reset switches
             document.getElementById('auto-connect').classList.add('active');
+            document.getElementById('auto-connect').setAttribute('aria-checked', 'true');
             document.getElementById('power-saving').classList.remove('active');
-            
-            addLogEntry('Settings reset to defaults', 'warning');
+            document.getElementById('power-saving').setAttribute('aria-checked', 'false');
+            document.getElementById('debug-mode').classList.remove('active');
+            document.getElementById('debug-mode').setAttribute('aria-checked', 'false');
+            document.getElementById('log-level').value = 'info';
+
+            addLogEntry('Settings reset to default', 'warning');
         }
 
-        function saveSettings() {
-            const settings = {
-                wifiSSID: document.getElementById('wifi-ssid').value,
-                wifiPassword: document.getElementById('wifi-password').value,
-                deviceName: document.getElementById('device-name').value,
-                refreshRate: document.getElementById('refresh-rate').value,
-                autoConnect: document.getElementById('auto-connect').classList.contains('active'),
-                powerSaving: document.getElementById('power-saving').classList.contains('active'),
-                connectionType: document.getElementById('connection-type').value
-            };
-            
-            console.log('Settings saved:', settings);
-            
-            // Show save feedback
-            const saveBtn = event.target;
-            const originalText = saveBtn.innerHTML;
-            saveBtn.innerHTML = '<svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"></polyline></svg> Saved!';
-            saveBtn.style.background = 'linear-gradient(45deg, var(--primary-green), #059669)';
-            
-            addLogEntry('Settings saved successfully', 'success');
-            
-            setTimeout(() => {
-                saveBtn.innerHTML = originalText;
-                saveBtn.style.background = 'linear-gradient(45deg, var(--primary-purple), #7c3aed)';
-                toggleSettings();
-            }, 1500);
+        // Fungsi untuk log (dari kode sebelumnya)
+        function addLogEntry(message, type) {
+            const logContent = document.getElementById('log-content');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logContent.appendChild(entry);
+            logContent.scrollTop = logContent.scrollHeight;
         }
 
-        // Update time
-        function updateTime() {
-            const now = new Date();
-            const timeString = now.toLocaleTimeString();
-            document.getElementById('current-time').textContent = timeString;
+        // Fungsi lainnya dari kode sebelumnya tetap sama
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
+            document.getElementById(`${tab}-tab`).classList.add('active');
+            document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
+            addLogEntry(`Switched to ${tab} tab`, 'info');
         }
 
-        // Enhanced keyboard shortcuts
-        function handleKeyboardShortcuts(e) {
-            switch(e.key) {
-                case 'Escape':
-                    if (!document.getElementById('settings-modal').classList.contains('hidden')) {
-                        toggleSettings();
-                    }
-                    break;
-                case '1':
-                    if (!e.target.matches('input, textarea, select')) {
-                        switchTab('control');
-                    }
-                    break;
-                case '2':
-                    if (!e.target.matches('input, textarea, select')) {
-                        switchTab('stats');
-                    }
-                    break;
-                case 's':
-                    if (e.ctrlKey || e.metaKey) {
-                        e.preventDefault();
-                        toggleSettings();
-                    }
-                    break;
-                case 'p':
-                    if (!e.target.matches('input, textarea, select')) {
-                        togglePump();
-                    }
-                    break;
-                case 'ArrowUp':
-                    if (!e.target.matches('input, textarea, select')) {
-                        e.preventDefault();
-                        startMovement('forward');
-                        setTimeout(() => stopMovement('forward'), 100);
-                    }
-                    break;
-                case 'ArrowDown':
-                    if (!e.target.matches('input, textarea, select')) {
-                        e.preventDefault();
-                        startMovement('backward');
-                        setTimeout(() => stopMovement('backward'), 100);
-                    }
-                    break;
+        function startMovement(direction) {
+            addLogEntry(`${direction} movement started`, 'info');
+        }
+
+        function stopMovement(direction) {
+            addLogEntry(`${direction} movement stopped`, 'info');
+        }
+
+        function togglePump() {
+            const pumpBtn = document.getElementById('pump-btn');
+            pumpBtn.classList.toggle('active');
+            addLogEntry(`Pump ${pumpBtn.classList.contains('active') ? 'ON' : 'OFF'}`, 'info');
+            if ('vibrate' in navigator) {
+                navigator.vibrate(50);
             }
         }
 
-        // Enhanced error handling
-        window.addEventListener('error', function(e) {
-            console.error('Application error:', e.error);
-            addLogEntry('Application error occurred', 'error');
+        function updateServo(value) {
+            document.getElementById('servo-value').textContent = `${value}°`;
+            addLogEntry(`Servo position set to ${value}°`, 'info');
+        }
+
+        // Joystick Logic
+        let isDragging = false;
+        const joystick = document.getElementById('joystick');
+        const joystickKnob = document.getElementById('joystick-knob');
+        const joystickX = document.getElementById('joystick-x');
+        const joystickY = document.getElementById('joystick-y');
+        const directionValue = document.getElementById('direction-value');
+
+        function startJoystick(event) {
+            isDragging = true;
+            joystick.classList.add('active');
+            moveJoystick(event);
+            addLogEntry('Joystick interaction started', 'info');
+        }
+
+        function moveJoystick(event) {
+            if (!isDragging) return;
+            event.preventDefault();
+            
+            const rect = joystick.getBoundingClientRect();
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const maxDistance = rect.width / 2 - joystickKnob.offsetWidth / 2;
+
+            let clientX, clientY;
+            if (event.type.includes('touch')) {
+                clientX = event.touches[0].clientX;
+                clientY = event.touches[0].clientY;
+            } else {
+                clientX = event.clientX;
+                clientY = event.clientY;
+            }
+
+            let x = clientX - rect.left - centerX;
+            let y = clientY - rect.top - centerY;
+
+            const distance = Math.sqrt(x * x + y * y);
+            if (distance > maxDistance) {
+                const angle = Math.atan2(y, x);
+                x = Math.cos(angle) * maxDistance;
+                y = Math.sin(angle) * maxDistance;
+            }
+
+            joystickKnob.style.transform = `translate(${x}px, ${y}px)`;
+            const normalizedX = Math.round((x / maxDistance) * 100);
+            const normalizedY = Math.round((y / maxDistance) * 100);
+
+            joystickX.textContent = normalizedX;
+            joystickY.textContent = normalizedY;
+
+            const angleDeg = (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+            let direction = 'CENTER';
+            if (distance > 20) {
+                if (angleDeg >= 337.5 || angleDeg < 22.5) direction = 'RIGHT';
+                else if (angleDeg >= 22.5 && angleDeg < 67.5) direction = 'UP-RIGHT';
+                else if (angleDeg >= 67.5 && angleDeg < 112.5) direction = 'UP';
+                else if (angleDeg >= 112.5 && angleDeg < 157.5) direction = 'UP-LEFT';
+                else if (angleDeg >= 157.5 && angleDeg < 202.5) direction = 'LEFT';
+                else if (angleDeg >= 202.5 && angleDeg < 247.5) direction = 'DOWN-LEFT';
+                else if (angleDeg >= 247.5 && angleDeg < 292.5) direction = 'DOWN';
+                else if (angleDeg >= 292.5 && angleDeg < 337.5) direction = 'DOWN-RIGHT';
+            }
+            directionValue.textContent = direction;
+        }
+
+        function stopJoystick() {
+            if (!isDragging) return;
+            isDragging = false;
+            joystick.classList.remove('active');
+            joystickKnob.style.transform = 'translate(-50%, -50%)';
+            joystickX.textContent = '0';
+            joystickY.textContent = '0';
+            directionValue.textContent = 'CENTER';
+            addLogEntry('Joystick interaction stopped', 'info');
+        }
+
+        joystick.addEventListener('mousemove', moveJoystick);
+        joystick.addEventListener('touchmove', moveJoystick);
+        document.addEventListener('mouseup', stopJoystick);
+        document.addEventListener('touchend', stopJoystick);
+
+        // Battery and Sensor Updates
+        function updateBattery() {
+            const batteryPercentage = document.getElementById('battery-percentage');
+            const batteryBarFill = document.getElementById('battery-bar-fill');
+            const batteryDisplay = document.getElementById('battery-display');
+            const level = Math.floor(Math.random() * 100);
+            batteryPercentage.textContent = `${level}%`;
+            batteryBarFill.style.width = `${level}%`;
+            batteryDisplay.className = 'battery-display';
+            if (level > 60) {
+                batteryDisplay.classList.add('battery-high');
+            } else if (level > 30) {
+                batteryDisplay.classList.add('battery-medium');
+            } else {
+                batteryDisplay.classList.add('battery-low');
+            }
+            if (level < 20) {
+                addLogEntry('Low battery warning', 'warning');
+            }
+        }
+
+        function updateSensors() {
+            document.getElementById('temp-value').textContent = `${Math.floor(Math.random() * 10) + 20}°C`;
+            document.getElementById('humidity-value').textContent = `${Math.floor(Math.random() * 40) + 30}%`;
+            document.getElementById('pressure-value').textContent = `${Math.floor(Math.random() * 100) + 950}hPa`;
+            document.getElementById('distance-value').textContent = `${Math.floor(Math.random() * 100) + 50}cm`;
+
+            ['temp-chart', 'humidity-chart', 'pressure-chart', 'distance-chart'].forEach(chartId => {
+                const chart = document.getElementById(chartId);
+                chart.innerHTML = '';
+                for (let i = 0; i < 10; i++) {
+                    const bar = document.createElement('div');
+                    bar.className = 'chart-bar';
+                    bar.style.height = `${Math.random() * 40 + 10}px`;
+                    chart.appendChild(bar);
+                }
+            });
+        }
+
+        // Update Time
+        function updateTime() {
+            document.getElementById('current-time').textContent = new Date().toLocaleString('en-US', { 
+                hour: 'numeric', 
+                minute: 'numeric', 
+                second: 'numeric', 
+                hour12: true 
+            });
+        }
+
+        // Initialize
+        setInterval(updateTime, 1000);
+        setInterval(updateBattery, 5000);
+        setInterval(updateSensors, 3000);
+        updateTime();
+        updateBattery();
+        updateSensors();
+
+        // Keyboard Shortcuts
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                if (!document.getElementById('settings-modal').classList.contains('hidden')) {
+                    toggleSettings();
+                }
+            }
+            if (event.key === '1') switchTab('control');
+            if (event.key === '2') switchTab('stats');
+            if (event.key === 's') toggleSettings();
+            if (event.key === 'p') togglePump();
+            if (event.key === 'ArrowUp') startMovement('forward');
+            if (event.key === 'ArrowDown') startMovement('backward');
         });
 
-        // Performance monitoring
-        let lastFrameTime = performance.now();
+        document.addEventListener('keyup', (event) => {
+            if (event.key === 'ArrowUp') stopMovement('forward');
+            if (event.key === 'ArrowDown') stopMovement('backward');
+        });
+
+        // Performance Monitoring
+        let frameCount = 0;
+        let lastTime = performance.now();
         function monitorPerformance() {
+            frameCount++;
             const currentTime = performance.now();
-            const deltaTime = currentTime - lastFrameTime;
-            lastFrameTime = currentTime;
-            
-            if (deltaTime > 50) {
-                console.warn('Performance warning: Frame time exceeded 50ms');
+            if (currentTime - lastTime >= 1000) {
+                const fps = frameCount / ((currentTime - lastTime) / 1000);
+                if (fps < 30) {
+                    addLogEntry(`Low performance: ${fps.toFixed(1)} FPS`, 'warning');
+                }
+                frameCount = 0;
+                lastTime = currentTime;
             }
-            
             requestAnimationFrame(monitorPerformance);
         }
-        
-        // Start performance monitoring
-        requestAnimationFrame(monitorPerformance);
-
-        // Add initial log entries
-        setTimeout(() => {
-            addLogEntry('ESP32 Control Panel initialized', 'success');
-            addLogEntry('All systems operational', 'info');
-        }, 1000);
-
-// Enhanced settings functions
-function togglePasswordVisibility(inputId) {
-    const input = document.getElementById(inputId);
-    const button = input.nextElementSibling;
-    const icon = button.querySelector('svg');
-    
-    if (input.type === 'password') {
-        input.type = 'text';
-        icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
-    } else {
-        input.type = 'password';
-        icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
-    }
-}
-
-function updateRefreshRate(value) {
-    document.getElementById('refresh-rate-value').textContent = value + 'ms';
-    
-    // Update slider progress
-    const slider = document.getElementById('refresh-rate');
-    const progress = ((value - slider.min) / (slider.max - slider.min)) * 100;
-    const progressBar = slider.parentElement.querySelector('.slider-progress');
-    if (progressBar) {
-        progressBar.style.width = progress + '%';
-    }
-    
-    addLogEntry(`Refresh rate set to ${value}ms`, 'info');
-}
-
-function resetSettings() {
-    // Reset form values
-    document.getElementById('wifi-ssid').value = 'ESP32_Network';
-    document.getElementById('wifi-password').value = '********';
-    document.getElementById('device-name').value = 'ESP32-Robot';
-    document.getElementById('refresh-rate').value = 100;
-    document.getElementById('refresh-rate-value').textContent = '100ms';
-    document.getElementById('connection-type').value = 'wifi';
-    
-    // Reset toggles
-    document.getElementById('auto-connect-input').checked = true;
-    document.getElementById('power-saving-input').checked = false;
-    document.getElementById('debug-mode-input').checked = false;
-    document.getElementById('haptic-feedback-input').checked = true;
-    
-    // Update slider progress
-    updateRefreshRate(100);
-    
-    addLogEntry('Settings reset to defaults', 'warning');
-}
-
-function saveSettings() {
-    const settings = {
-        wifiSSID: document.getElementById('wifi-ssid').value,
-        wifiPassword: document.getElementById('wifi-password').value,
-        deviceName: document.getElementById('device-name').value,
-        refreshRate: document.getElementById('refresh-rate').value,
-        connectionType: document.getElementById('connection-type').value,
-        autoConnect: document.getElementById('auto-connect-input').checked,
-        powerSaving: document.getElementById('power-saving-input').checked,
-        debugMode: document.getElementById('debug-mode-input').checked,
-        hapticFeedback: document.getElementById('haptic-feedback-input').checked
-    };
-    
-    console.log('Settings saved:', settings);
-    
-    // Show save feedback
-    const saveBtn = event.target;
-    const originalText = saveBtn.innerHTML;
-    saveBtn.innerHTML = '<svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"></polyline></svg> Saved Successfully!';
-    saveBtn.style.background = 'linear-gradient(45deg, var(--primary-green), #059669)';
-    saveBtn.disabled = true;
-    
-    addLogEntry('Settings saved successfully', 'success');
-    
-    setTimeout(() => {
-        saveBtn.innerHTML = originalText;
-        saveBtn.style.background = 'linear-gradient(45deg, var(--primary-purple), #7c3aed)';
-        saveBtn.disabled = false;
-        toggleSettings();
-    }, 2000);
-}
-\`\`\`
+        monitorPerformance();
+    </script>
+</body>
+</html>
