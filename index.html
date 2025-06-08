@@ -1,0 +1,2633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32 Control Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0033 25%, #330066 50%, #1a0033 75%, #0a0a0a 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            overflow: hidden;
+            color: white;
+            position: relative;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* Enhanced Background Effects */
+        .background-effects {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .floating-orbs {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.4), rgba(168, 85, 247, 0.1), transparent);
+            animation: floatOrb 20s ease-in-out infinite;
+            filter: blur(1px);
+        }
+
+        .orb:nth-child(1) { width: 200px; height: 200px; left: 10%; animation-delay: 0s; }
+        .orb:nth-child(2) { width: 150px; height: 150px; right: 15%; animation-delay: 5s; }
+        .orb:nth-child(3) { width: 100px; height: 100px; left: 60%; animation-delay: 10s; }
+        .orb:nth-child(4) { width: 120px; height: 120px; right: 40%; animation-delay: 15s; }
+
+        @keyframes floatOrb {
+            0%, 100% { transform: translateY(100vh) scale(0.8) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            50% { transform: translateY(-20vh) scale(1.2) rotate(180deg); opacity: 0.8; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-120vh) scale(0.6) rotate(360deg); opacity: 0; }
+        }
+
+        .neural-network {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(6, 182, 212, 0.1) 1px, transparent 1px),
+                radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.1) 1px, transparent 1px),
+                radial-gradient(circle at 40% 80%, rgba(16, 185, 129, 0.1) 1px, transparent 1px);
+            background-size: 100px 100px, 150px 150px, 120px 120px;
+            animation: neuralPulse 8s ease-in-out infinite;
+        }
+
+        @keyframes neuralPulse {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.05); }
+        }
+
+        .container {
+            width: 100%;
+            height: 100vh;
+            max-width: 1920px;
+            margin: 0 auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Enhanced Glassmorphism Cards */
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card:hover::before {
+            left: 100%;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(168, 85, 247, 0.3);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.4),
+                0 0 30px rgba(168, 85, 247, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .header {
+            margin-bottom: 20px;
+            flex-shrink: 0;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: linear-gradient(45deg, #a855f7, #06b6d4, #10b981);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titleGradient 3s ease infinite;
+            text-shadow: 0 0 30px rgba(168, 85, 247, 0.5);
+        }
+
+        @keyframes titleGradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            background: radial-gradient(circle, #10b981, #059669);
+            border-radius: 50%;
+            animation: statusPulse 2s ease infinite;
+            box-shadow: 
+                0 0 20px #10b981,
+                0 0 40px rgba(16, 185, 129, 0.5);
+        }
+
+        @keyframes statusPulse {
+            0%, 100% { 
+                transform: scale(1);
+                box-shadow: 0 0 20px #10b981, 0 0 40px rgba(16, 185, 129, 0.5);
+            }
+            50% { 
+                transform: scale(1.3);
+                box-shadow: 0 0 30px #10b981, 0 0 60px rgba(16, 185, 129, 0.8);
+            }
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .wifi-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            padding: 8px 16px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 20px;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            backdrop-filter: blur(10px);
+            animation: wifiGlow 4s ease-in-out infinite;
+        }
+
+        @keyframes wifiGlow {
+            0%, 100% { 
+                box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+                border-color: rgba(16, 185, 129, 0.3);
+            }
+            50% { 
+                box-shadow: 0 0 25px rgba(16, 185, 129, 0.6);
+                border-color: rgba(16, 185, 129, 0.6);
+            }
+        }
+
+        .wifi-icon {
+            width: 18px;
+            height: 18px;
+            color: #10b981;
+            animation: wifiPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes wifiPulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.1) rotate(5deg); }
+            75% { transform: scale(1.1) rotate(-5deg); }
+        }
+
+        .settings-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .settings-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.3), transparent);
+            border-radius: 50%;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translate(-50%, -50%);
+        }
+
+        .settings-btn:hover::before {
+            width: 120px;
+            height: 120px;
+        }
+
+        .settings-btn:hover {
+            transform: rotate(180deg) scale(1.1);
+            border-color: rgba(168, 85, 247, 0.5);
+            box-shadow: 0 0 25px rgba(168, 85, 247, 0.4);
+        }
+
+        /* Enhanced Tabs */
+        .tabs {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .tab-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 8px;
+        }
+
+        .tab-button {
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 16px;
+            border-radius: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            font-weight: 600;
+        }
+
+        .tab-button::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #a855f7, #06b6d4);
+            border-radius: 2px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateX(-50%);
+        }
+
+        .tab-button:hover::before {
+            width: 80%;
+        }
+
+        .tab-button.active {
+            background: rgba(168, 85, 247, 0.2);
+            box-shadow: 
+                0 8px 25px rgba(168, 85, 247, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .tab-button.active::before {
+            width: 90%;
+        }
+
+        .tab-content {
+            flex: 1;
+            display: none;
+            min-height: 0;
+        }
+
+        .tab-content.active {
+            display: flex;
+            flex-direction: column;
+            animation: tabFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes tabFadeIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px) scale(0.95); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1); 
+            }
+        }
+
+        .control-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .panel {
+            display: flex;
+            flex-direction: column;
+            animation: panelSlideIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .panel:nth-child(1) { animation-delay: 0.1s; }
+        .panel:nth-child(2) { animation-delay: 0.2s; }
+        .panel:nth-child(3) { animation-delay: 0.3s; }
+        .panel:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes panelSlideIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(40px) rotateX(10deg); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) rotateX(0deg); 
+            }
+        }
+
+        .panel-header {
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-title {
+            font-size: 18px;
+            font-weight: 700;
+            background: linear-gradient(45deg, #a855f7, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
+        }
+
+        .panel-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        /* Ultra Enhanced Joystick */
+        .joystick-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            perspective: 1000px;
+        }
+
+        .joystick {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            background: 
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2), transparent 50%),
+                radial-gradient(circle at 70% 70%, rgba(0, 0, 0, 0.3), transparent 50%),
+                linear-gradient(135deg, #2a2a3a, #1a1a2a);
+            border-radius: 50%;
+            border: 3px solid rgba(168, 85, 247, 0.4);
+            box-shadow: 
+                0 0 30px rgba(168, 85, 247, 0.3),
+                inset 0 0 20px rgba(0, 0, 0, 0.5),
+                inset 0 2px 4px rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: joystickIdle 4s ease-in-out infinite;
+        }
+
+        @keyframes joystickIdle {
+            0%, 100% { 
+                box-shadow: 
+                    0 0 30px rgba(168, 85, 247, 0.3),
+                    inset 0 0 20px rgba(0, 0, 0, 0.5),
+                    inset 0 2px 4px rgba(255, 255, 255, 0.1);
+            }
+            50% { 
+                box-shadow: 
+                    0 0 50px rgba(168, 85, 247, 0.5),
+                    inset 0 0 25px rgba(0, 0, 0, 0.6),
+                    inset 0 2px 6px rgba(255, 255, 255, 0.15);
+            }
+        }
+
+        .joystick.active {
+            transform: scale(1.05);
+            border-color: rgba(168, 85, 247, 0.8);
+            box-shadow: 
+                0 0 50px rgba(168, 85, 247, 0.6),
+                0 0 100px rgba(168, 85, 247, 0.3),
+                inset 0 0 25px rgba(0, 0, 0, 0.6);
+            animation: joystickActive 1s ease-in-out infinite;
+        }
+
+        @keyframes joystickActive {
+            0%, 100% { 
+                box-shadow: 
+                    0 0 50px rgba(168, 85, 247, 0.6),
+                    0 0 100px rgba(168, 85, 247, 0.3),
+                    inset 0 0 25px rgba(0, 0, 0, 0.6);
+            }
+            50% { 
+                box-shadow: 
+                    0 0 70px rgba(168, 85, 247, 0.8),
+                    0 0 120px rgba(168, 85, 247, 0.4),
+                    inset 0 0 30px rgba(0, 0, 0, 0.7);
+            }
+        }
+
+        .joystick-knob {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: 
+                radial-gradient(circle at 30% 30%, #ffffff, #a855f7 40%, #7c3aed 70%, #5b21b6);
+            border-radius: 50%;
+            box-shadow: 
+                0 6px 20px rgba(0, 0, 0, 0.4),
+                0 0 20px rgba(168, 85, 247, 0.6),
+                inset 0 2px 4px rgba(255, 255, 255, 0.3),
+                inset 0 -2px 4px rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+            top: 50%;
+            left: 50%;
+            cursor: grab;
+        }
+
+        .joystick-knob:active {
+            cursor: grabbing;
+            transform: translate(-50%, -50%) scale(1.1);
+            box-shadow: 
+                0 8px 25px rgba(0, 0, 0, 0.5),
+                0 0 30px rgba(168, 85, 247, 0.8),
+                inset 0 2px 6px rgba(255, 255, 255, 0.4);
+        }
+
+        .joystick-knob::before {
+            content: '';
+            position: absolute;
+            top: 15%;
+            left: 15%;
+            width: 70%;
+            height: 70%;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.6), transparent 60%);
+            border-radius: 50%;
+            animation: knobShine 3s ease-in-out infinite;
+        }
+
+        @keyframes knobShine {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+
+        .joystick-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 6px;
+            height: 6px;
+            background: radial-gradient(circle, #ffffff, #a855f7);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 
+                0 0 15px #a855f7,
+                0 0 30px rgba(168, 85, 247, 0.5);
+            animation: centerPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes centerPulse {
+            0%, 100% { 
+                opacity: 1; 
+                transform: translate(-50%, -50%) scale(1);
+                box-shadow: 0 0 15px #a855f7, 0 0 30px rgba(168, 85, 247, 0.5);
+            }
+            50% { 
+                opacity: 0.7; 
+                transform: translate(-50%, -50%) scale(1.5);
+                box-shadow: 0 0 25px #a855f7, 0 0 50px rgba(168, 85, 247, 0.8);
+            }
+        }
+
+        /* Joystick Trail Effect */
+        .joystick-trail {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: radial-gradient(circle, #a855f7, transparent);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: trailFade 0.5s ease-out forwards;
+        }
+
+        @keyframes trailFade {
+            from { 
+                opacity: 1; 
+                transform: scale(1); 
+            }
+            to { 
+                opacity: 0; 
+                transform: scale(0.2); 
+            }
+        }
+
+        .joystick-values {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .joystick-value {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px;
+            border-radius: 15px;
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .joystick-value::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.2), transparent);
+            transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .joystick-value:hover::before {
+            left: 100%;
+        }
+
+        .joystick-value:hover {
+            transform: translateY(-3px) scale(1.05);
+            border-color: rgba(168, 85, 247, 0.4);
+            box-shadow: 0 8px 25px rgba(168, 85, 247, 0.2);
+        }
+
+        .joystick-number {
+            font-size: 16px;
+            font-weight: 700;
+            color: #a855f7;
+            text-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
+            transition: all 0.3s ease;
+        }
+
+        .joystick-axis {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 4px;
+        }
+
+        .direction-indicator {
+            text-align: center;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .direction-label {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-bottom: 6px;
+        }
+
+        .direction-value {
+            font-size: 16px;
+            font-weight: 700;
+            text-shadow: 0 0 15px currentColor;
+            animation: directionPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes directionPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Enhanced Movement Buttons */
+        .movement-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .movement-btn {
+            position: relative;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            perspective: 1000px;
+        }
+
+        .movement-btn:active {
+            transform: scale(0.95);
+        }
+
+        .movement-btn-shadow {
+            position: absolute;
+            inset: 0;
+            border-radius: 15px;
+            transform: translateY(8px);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            filter: blur(6px);
+        }
+
+        .movement-btn:active .movement-btn-shadow {
+            transform: translateY(4px);
+        }
+
+        .movement-btn-face {
+            position: relative;
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                0 8px 25px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            gap: 8px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .movement-btn:active .movement-btn-face {
+            transform: translateY(4px);
+        }
+
+        .movement-btn-face::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent 50%, rgba(255, 255, 255, 0.1));
+            border-radius: 15px;
+            pointer-events: none;
+        }
+
+        .movement-btn-face::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translate(-50%, -50%);
+        }
+
+        .movement-btn:hover .movement-btn-face::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .forward-btn .movement-btn-shadow {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        }
+
+        .forward-btn .movement-btn-face {
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            animation: forwardGlow 4s ease-in-out infinite;
+        }
+
+        @keyframes forwardGlow {
+            0%, 100% { 
+                box-shadow: 
+                    0 8px 25px rgba(0, 0, 0, 0.3),
+                    0 0 20px rgba(59, 130, 246, 0.4),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            }
+            50% { 
+                box-shadow: 
+                    0 8px 25px rgba(0, 0, 0, 0.3),
+                    0 0 40px rgba(59, 130, 246, 0.7),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            }
+        }
+
+        .backward-btn .movement-btn-shadow {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .backward-btn .movement-btn-face {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            animation: backwardGlow 4s ease-in-out infinite;
+        }
+
+        @keyframes backwardGlow {
+            0%, 100% { 
+                box-shadow: 
+                    0 8px 25px rgba(0, 0, 0, 0.3),
+                    0 0 20px rgba(239, 68, 68, 0.4),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            }
+            50% { 
+                box-shadow: 
+                    0 8px 25px rgba(0, 0, 0, 0.3),
+                    0 0 40px rgba(239, 68, 68, 0.7),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            }
+        }
+
+        /* Enhanced Pump Button */
+        .pump-btn {
+            position: relative;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .pump-btn:active {
+            transform: scale(0.9);
+        }
+
+        .pump-btn-shadow {
+            position: absolute;
+            inset: 0;
+            border-radius: 12px;
+            transform: translateY(4px);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            filter: blur(4px);
+        }
+
+        .pump-btn:active .pump-btn-shadow {
+            transform: translateY(2px);
+        }
+
+        .pump-btn-face {
+            position: relative;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                0 4px 15px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .pump-btn:active .pump-btn-face {
+            transform: translateY(2px);
+        }
+
+        .pump-btn-face::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
+            border-radius: 12px;
+            pointer-events: none;
+        }
+
+        .pump-btn.active .pump-btn-shadow {
+            background: linear-gradient(135deg, #0891b2, #0e7490);
+        }
+
+        .pump-btn.active .pump-btn-face {
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+            animation: pumpActive 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pumpActive {
+            0%, 100% { 
+                box-shadow: 
+                    0 4px 15px rgba(0, 0, 0, 0.3),
+                    0 0 20px rgba(6, 182, 212, 0.5),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            }
+            50% { 
+                box-shadow: 
+                    0 4px 15px rgba(0, 0, 0, 0.3),
+                    0 0 35px rgba(6, 182, 212, 0.8),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            }
+        }
+
+        .pump-btn:not(.active) .pump-btn-shadow {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+        }
+
+        .pump-btn:not(.active) .pump-btn-face {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+        }
+
+        .pump-icon {
+            width: 24px;
+            height: 24px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .pump-btn.active .pump-icon {
+            animation: pumpSpin 2s linear infinite;
+        }
+
+        @keyframes pumpSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Enhanced Battery Display */
+        .battery-display {
+            text-align: center;
+            position: relative;
+        }
+
+        .battery-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 16px;
+            filter: drop-shadow(0 0 15px currentColor);
+            animation: batteryFloat 4s ease-in-out infinite;
+        }
+
+        @keyframes batteryFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            25% { transform: translateY(-3px) rotate(1deg); }
+            75% { transform: translateY(-3px) rotate(-1deg); }
+        }
+
+        .battery-percentage {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            text-shadow: 0 0 25px currentColor;
+            animation: batteryPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes batteryPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .battery-label {
+            font-size: 14px;
+            color: #9ca3af;
+            font-weight: 500;
+        }
+
+        .battery-bar {
+            width: 100%;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .battery-bar-bg {
+            background: rgba(55, 65, 81, 0.8);
+            border-radius: 10px;
+            height: 16px;
+            overflow: hidden;
+            position: relative;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .battery-bar-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: batteryCharge 3s linear infinite;
+        }
+
+        @keyframes batteryCharge {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .battery-bar-fill {
+            height: 100%;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .battery-bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: batteryShine 4s linear infinite;
+        }
+
+        @keyframes batteryShine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .battery-high {
+            color: #10b981;
+        }
+
+        .battery-medium {
+            color: #f59e0b;
+        }
+
+        .battery-low {
+            color: #ef4444;
+        }
+
+        .battery-high .battery-bar-fill {
+            background: linear-gradient(90deg, #10b981, #059669, #047857);
+        }
+
+        .battery-medium .battery-bar-fill {
+            background: linear-gradient(90deg, #f59e0b, #d97706, #b45309);
+        }
+
+        .battery-low .battery-bar-fill {
+            background: linear-gradient(90deg, #ef4444, #dc2626, #b91c1c);
+        }
+
+        /* Enhanced System Stats */
+        .system-stats {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            text-align: center;
+        }
+
+        .stat-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px;
+            border-radius: 15px;
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.2), transparent);
+            transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .stat-item:hover::before {
+            left: 100%;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-3px) scale(1.02);
+            border-color: rgba(168, 85, 247, 0.4);
+            box-shadow: 0 8px 25px rgba(168, 85, 247, 0.2);
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            text-shadow: 0 0 15px currentColor;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #9ca3af;
+            font-weight: 500;
+        }
+
+        /* Enhanced Servo Control */
+        .servo-control {
+            margin-top: 20px;
+        }
+
+        .servo-label {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            text-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
+        }
+
+        .servo-container {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 16px;
+            border-radius: 15px;
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .servo-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.1), transparent);
+            animation: servoScan 4s linear infinite;
+        }
+
+        @keyframes servoScan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .servo-values {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #d1d5db;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .servo-current {
+            color: #a855f7;
+            font-weight: 700;
+            text-shadow: 0 0 15px #a855f7;
+            animation: servoValuePulse 2.5s ease-in-out infinite;
+        }
+
+        @keyframes servoValuePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .slider {
+            width: 100%;
+            height: 8px;
+            background: rgba(55, 65, 81, 0.8);
+            border-radius: 4px;
+            outline: none;
+            -webkit-appearance: none;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(10px);
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(45deg, #a855f7, #06b6d4);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 
+                0 0 15px rgba(168, 85, 247, 0.6),
+                0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 
+                0 0 25px rgba(168, 85, 247, 0.8),
+                0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(45deg, #a855f7, #06b6d4);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 
+                0 0 15px rgba(168, 85, 247, 0.6),
+                0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Enhanced Stats Page */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .sensor-data {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .mini-chart {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 16px;
+            border-radius: 15px;
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mini-chart::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.1), transparent);
+            animation: chartScan 5s linear infinite;
+        }
+
+        @keyframes chartScan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .mini-chart:hover {
+            transform: translateY(-5px);
+            border-color: rgba(168, 85, 247, 0.4);
+            box-shadow: 0 12px 30px rgba(168, 85, 247, 0.2);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .chart-label {
+            font-size: 14px;
+            color: #9ca3af;
+            font-weight: 500;
+        }
+
+        .chart-value {
+            font-size: 16px;
+            font-weight: 700;
+            text-shadow: 0 0 15px currentColor;
+            animation: valueUpdate 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes valueUpdate {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .chart-bars {
+            height: 60px;
+            display: flex;
+            align-items: end;
+            gap: 2px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .chart-bar {
+            flex: 1;
+            background: #3b82f6;
+            border-radius: 2px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, transparent, rgba(255, 255, 255, 0.3));
+            animation: barShine 3s linear infinite;
+        }
+
+        @keyframes barShine {
+            0% { transform: translateY(100%); }
+            100% { transform: translateY(-100%); }
+        }
+
+        .chart-bar:hover {
+            transform: scaleY(1.1);
+            filter: brightness(1.3);
+        }
+
+        /* Enhanced Footer */
+        .footer {
+            margin-top: 20px;
+            flex-shrink: 0;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            color: #9ca3af;
+            padding: 12px 0;
+        }
+
+        /* Enhanced Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(15px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            padding: 20px;
+            animation: modalFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            width: 100%;
+            max-width: 450px;
+            background: rgba(17, 24, 39, 0.95);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.5),
+                0 0 50px rgba(168, 85, 247, 0.2);
+        }
+
+        .modal-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.1), transparent);
+            animation: modalScan 4s linear infinite;
+        }
+
+        @keyframes modalScan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        @keyframes modalSlideIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(-30px) scale(0.9); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1); 
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .modal-title {
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(45deg, #a855f7, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .close-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #9ca3af;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 10px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+        }
+
+        .close-btn:hover {
+            color: white;
+            transform: rotate(90deg) scale(1.1);
+            border-color: rgba(168, 85, 247, 0.5);
+        }
+
+        .settings-section {
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #a855f7;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            color: #9ca3af;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 14px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #a855f7;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .switch-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            border: 1px solid rgba(168, 85, 247, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .switch-info {
+            flex: 1;
+        }
+
+        .switch-description {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .switch {
+            position: relative;
+            width: 50px;
+            height: 28px;
+            background: rgba(55, 65, 81, 0.8);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .switch.active {
+            background: linear-gradient(45deg, #a855f7, #7c3aed);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
+        }
+
+        .switch-thumb {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .switch.active .switch-thumb {
+            transform: translateX(22px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), 0 0 15px rgba(168, 85, 247, 0.3);
+        }
+
+        .select {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 14px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+        }
+
+        .select:focus {
+            outline: none;
+            border-color: #a855f7;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translate(-50%, -50%);
+        }
+
+        .btn:hover::before {
+            width: 150px;
+            height: 150px;
+        }
+
+        .btn-outline {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            color: white;
+        }
+
+        .btn-outline:hover {
+            background: rgba(168, 85, 247, 0.1);
+            border-color: rgba(168, 85, 247, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #7c3aed, #a855f7);
+            color: white;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #6d28d9, #9333ea);
+            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            color: #06b6d4;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(6, 182, 212, 0.2);
+            border-color: rgba(6, 182, 212, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Icons */
+        .icon {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        .icon-sm {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .control-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .orb {
+                display: none;
+            }
+
+            .joystick {
+                width: 120px;
+                height: 120px;
+            }
+
+            .joystick-knob {
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, #a855f7, #06b6d4);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(45deg, #9333ea, #0891b2);
+        }
+    </style>
+</head>
+<body>
+    <!-- Enhanced Background Effects -->
+    <div class="background-effects">
+        <div class="floating-orbs">
+            <div class="orb"></div>
+            <div class="orb"></div>
+            <div class="orb"></div>
+            <div class="orb"></div>
+        </div>
+        <div class="neural-network"></div>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="card header">
+            <div class="header-content">
+                <div class="title">
+                    <div class="status-dot"></div>
+                    ESP32 Control Panel
+                </div>
+                <div class="header-controls">
+                    <div class="wifi-status">
+                        <svg class="wifi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
+                            <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
+                            <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+                            <line x1="12" y1="20" x2="12.01" y2="20"></line>
+                        </svg>
+                        <span id="connection-status">Connected</span>
+                    </div>
+                    <button class="settings-btn" onclick="toggleSettings()">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab-list">
+                <button class="tab-button active" onclick="switchTab('control')">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9,22 9,12 15,12 15,22"></polyline>
+                    </svg>
+                    Control
+                </button>
+                <button class="tab-button" onclick="switchTab('stats')">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="20" x2="12" y2="10"></line>
+                        <line x1="18" y1="20" x2="18" y2="4"></line>
+                        <line x1="6" y1="20" x2="6" y2="16"></line>
+                    </svg>
+                    Stats
+                </button>
+            </div>
+
+            <!-- Control Tab -->
+            <div id="control-tab" class="tab-content active">
+                <div class="control-grid">
+                    <!-- Movement Panel -->
+                    <div class="card panel">
+                        <div class="panel-header">
+                            <div class="panel-title">Movement</div>
+                        </div>
+                        <div class="panel-content">
+                            <div class="movement-buttons">
+                                <div class="movement-btn forward-btn" 
+                                     onmousedown="startMovement('forward')" 
+                                     onmouseup="stopMovement('forward')"
+                                     onmouseleave="stopMovement('forward')"
+                                     ontouchstart="startMovement('forward')"
+                                     ontouchend="stopMovement('forward')">
+                                    <div class="movement-btn-shadow"></div>
+                                    <div class="movement-btn-face">
+                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="18,15 12,9 6,15"></polyline>
+                                        </svg>
+                                        FORWARD
+                                    </div>
+                                </div>
+                                <div class="movement-btn backward-btn"
+                                     onmousedown="startMovement('backward')" 
+                                     onmouseup="stopMovement('backward')"
+                                     onmouseleave="stopMovement('backward')"
+                                     ontouchstart="startMovement('backward')"
+                                     ontouchend="stopMovement('backward')">
+                                    <div class="movement-btn-shadow"></div>
+                                    <div class="movement-btn-face">
+                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="6,9 12,15 18,9"></polyline>
+                                        </svg>
+                                        BACKWARD
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="servo-control">
+                                <div class="servo-label">Servo Control</div>
+                                <div class="servo-container">
+                                    <div class="servo-values">
+                                        <span>0°</span>
+                                        <span class="servo-current" id="servo-value">90°</span>
+                                        <span>180°</span>
+                                    </div>
+                                    <input type="range" class="slider" min="0" max="180" value="90" 
+                                           oninput="updateServo(this.value)" id="servo-slider">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Battery Panel -->
+                    <div class="card panel">
+                        <div class="panel-header">
+                            <div class="panel-title">Battery</div>
+                        </div>
+                        <div class="panel-content">
+                            <div class="battery-display" id="battery-display">
+                                <svg class="battery-icon" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
+                                    <rect x="1" y="6" width="18" height="12" rx="2" ry="2"></rect>
+                                    <line x1="23" y1="13" x2="23" y2="11"></line>
+                                </svg>
+                                <div class="battery-percentage" id="battery-percentage">75%</div>
+                                <div class="battery-label">Battery Level</div>
+                            </div>
+                            <div class="battery-bar">
+                                <div class="battery-bar-bg">
+                                    <div class="battery-bar-fill" id="battery-bar-fill" style="width: 75%"></div>
+                                </div>
+                            </div>
+                            <div class="system-stats">
+                                <div class="stat-item">
+                                    <div class="stat-value" style="color: #3b82f6;">23°C</div>
+                                    <div class="stat-label">Temp</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" style="color: #a855f7;">-45dBm</div>
+                                    <div class="stat-label">Signal</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System Panel -->
+                    <div class="card panel">
+                        <div class="panel-header">
+                            <div class="panel-title">System</div>
+                        </div>
+                        <div class="panel-content">
+                            <div class="system-stats">
+                                <div class="stat-item">
+                                    <div class="stat-value" style="color: #10b981;">Online</div>
+                                    <div class="stat-label">Status</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" style="color: #06b6d4;">2.4GHz</div>
+                                    <div class="stat-label">WiFi Band</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" style="color: #f59e0b;">45ms</div>
+                                    <div class="stat-label">Latency</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" style="color: #a855f7;">v2.1</div>
+                                    <div class="stat-label">Firmware</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Direction Panel -->
+                    <div class="card panel">
+                        <div class="panel-header">
+                            <div class="panel-title">Direction</div>
+                            <div class="pump-btn" id="pump-btn" onclick="togglePump()">
+                                <div class="pump-btn-shadow"></div>
+                                <div class="pump-btn-face">
+                                    <svg class="pump-icon" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-content">
+                            <div class="joystick-container">
+                                <div class="joystick" id="joystick"
+                                     onmousedown="startJoystick(event)"
+                                     ontouchstart="startJoystick(event)">
+                                    <div class="joystick-knob" id="joystick-knob"></div>
+                                    <div class="joystick-center"></div>
+                                </div>
+                                <div class="joystick-values">
+                                    <div class="joystick-value">
+                                        <div class="joystick-number" id="joystick-x">0</div>
+                                        <div class="joystick-axis">X</div>
+                                    </div>
+                                    <div class="joystick-value">
+                                        <div class="joystick-number" id="joystick-y">0</div>
+                                        <div class="joystick-axis">Y</div>
+                                    </div>
+                                </div>
+                                <div class="direction-indicator">
+                                    <div class="direction-label">Direction</div>
+                                    <div class="direction-value" id="direction-value">CENTER</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Tab -->
+            <div id="stats-tab" class="tab-content">
+                <div class="stats-grid">
+                    <!-- Sensor Data -->
+                    <div class="card panel">
+                        <div class="panel-header">
+                            <div class="panel-title">Sensor Data</div>
+                        </div>
+                        <div class="panel-content">
+                            <div class="sensor-data">
+                                <div class="mini-chart">
+                                    <div class="chart-header">
+                                        <span class="chart-label">Temperature</span>
+                                        <span class="chart-value" style="color: #3b82f6;" id="temp-value">23°C</span>
+                                    </div>
+                                    <div class="chart-bars" id="temp-chart"></div>
+                                </div>
+                                <div class="mini-chart">
+                                    <div class="chart-header">
+                                        <span class="chart-label">Humidity</span>
+                                        <span class="chart-value" style="color: #10b981;" id="humidity-value">45%</span>
+                                    </div>
+                                    <div class="chart-bars" id="humidity-chart"></div>
+                                </div>
+                                <div class="mini-chart">
+                                    <div class="chart-header">
+                                        <span class="chart-label">Pressure</span>
+                                        <span class="chart-value" style="color: #f59e0b;" id="pressure-value">1013hPa</span>
+                                    </div>
+                                    <div class="chart-bars" id="pressure-chart"></div>
+                                </div>
+                                <div class="mini-chart">
+                                    <div class="chart-header">
+                                        <span class="chart-label">Distance</span>
+                                        <span class="chart-value" style="color: #8b5cf6;" id="distance-value">120cm</span>
+                                    </div>
+                                    <div class="chart-bars" id="distance-chart"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System Stats -->
+                    <div class="card panel">
+                        <div class="panel-header">
+                            <div class="panel-title">System Stats</div>
+                        </div>
+                        <div class="panel-content">
+                            <div class="system-info">
+                                <div class="progress-item">
+                                    <div class="progress-header">
+                                        <span class="progress-label">CPU Usage</span>
+                                        <span class="progress-value">32%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 32%; background: #3b82f6;"></div>
+                                    </div>
+                                </div>
+                                <div class="progress-item">
+                                    <div class="progress-header">
+                                        <span class="progress-label">Memory Usage</span>
+                                        <span class="progress-value">64%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 64%; background: #a855f7;"></div>
+                                    </div>
+                                </div>
+                                <div class="progress-item">
+                                    <div class="progress-header">
+                                        <span class="progress-label">Network Traffic</span>
+                                        <span class="progress-value">2.4 KB/s</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 24%; background: #10b981;"></div>
+                                    </div>
+                                </div>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <div class="info-label">Uptime</div>
+                                        <div class="info-value">3h 24m 12s</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">IP Address</div>
+                                        <div class="info-value">192.168.1.105</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">MAC Address</div>
+                                        <div class="info-value">A4:CF:12:DF:3B:6E</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">Free Storage</div>
+                                        <div class="info-value">2.4 MB</div>
+                                    </div>
+                                </div>
+                                <div class="log-container">
+                                    <div class="log-header">Recent Logs</div>
+                                    <div class="log-content" id="log-content">
+                                        <div class="log-entry log-success">[12:34:56] System started</div>
+                                        <div class="log-entry log-info">[12:35:01] WiFi connected</div>
+                                        <div class="log-entry log-info">[12:35:12] Sensors initialized</div>
+                                        <div class="log-entry log-warning">[12:36:45] Battery level: 75%</div>
+                                        <div class="log-entry log-info">[12:37:23] Motor control ready</div>
+                                        <div class="log-entry log-error">[12:38:10] Warning: High temperature</div>
+                                        <div class="log-entry log-info">[12:39:05] Temperature normalized</div>
+                                        <div class="log-entry log-info">[12:40:22] Client connected</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="card footer">
+            <div class="footer-content">
+                <div>ESP32 Control Panel v1.0</div>
+                <div id="current-time"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Settings</div>
+                <button class="close-btn" onclick="toggleSettings()">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="settings-section">
+                <div class="section-title">
+                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
+                        <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
+                        <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+                        <line x1="12" y1="20" x2="12.01" y2="20"></line>
+                    </svg>
+                    WiFi Settings
+                </div>
+                <div class="form-group">
+                    <label class="form-label">WiFi SSID</label>
+                    <input type="text" class="form-input" value="ESP32_Network" id="wifi-ssid">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">WiFi Password</label>
+                    <input type="password" class="form-input" value="********" id="wifi-password">
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="section-title">
+                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"></path>
+                    </svg>
+                    Device Settings
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Device Name</label>
+                    <input type="text" class="form-input" value="ESP32-Robot" id="device-name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Refresh Rate: <span id="refresh-rate-value">100</span>ms</label>
+                    <input type="range" class="slider" min="50" max="500" value="100" step="10" 
+                           oninput="updateRefreshRate(this.value)" id="refresh-rate">
+                </div>
+                <div class="switch-group">
+                    <div class="switch-info">
+                        <label class="form-label">Auto Connect</label>
+                        <div class="switch-description">Automatically connect on startup</div>
+                    </div>
+                    <div class="switch active" onclick="toggleSwitch(this)" id="auto-connect">
+                        <div class="switch-thumb"></div>
+                    </div>
+                </div>
+                <div class="switch-group">
+                    <div class="switch-info">
+                        <label class="form-label">Power Saving</label>
+                        <div class="switch-description">Reduce power consumption</div>
+                    </div>
+                    <div class="switch" onclick="toggleSwitch(this)" id="power-saving">
+                        <div class="switch-thumb"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="section-title">
+                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="2"></circle>
+                        <path d="M12 1v6m0 6v6"></path>
+                        <path d="M1 12h6m6 0h6"></path>
+                    </svg>
+                    Connection Type
+                </div>
+                <select class="select" id="connection-type">
+                    <option value="wifi">WiFi</option>
+                    <option value="bluetooth">Bluetooth</option>
+                    <option value="serial">Serial</option>
+                </select>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="toggleSettings()">
+                    <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                    Cancel
+                </button>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-secondary">
+                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="23,4 23,10 17,10"></polyline>
+                            <polyline points="1,20 1,14 7,14"></polyline>
+                            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
+                        </svg>
+                        Reset
+                    </button>
+                    <button class="btn btn-primary" onclick="saveSettings()">
+                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                            <polyline points="17,21 17,13 7,13 7,21"></polyline>
+                            <polyline points="7,3 7,8 15,8"></polyline>
+                        </svg>
+                        Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let joystickActive = false;
+        let joystickPosition = { x: 0, y: 0 };
+        let batteryLevel = 75;
+        let servoPosition = 90;
+        let isPumpActive = false;
+        let activeTab = 'control';
+        let trailElements = [];
+        let sensorData = {
+            temperature: [23, 24, 22, 23, 25, 24, 23, 22, 23, 24],
+            humidity: [45, 46, 44, 45, 47, 48, 46, 45, 44, 46],
+            pressure: [1013, 1014, 1012, 1013, 1015, 1014, 1013, 1012, 1013, 1014],
+            distance: [120, 118, 122, 125, 119, 120, 121, 123, 122, 120]
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTime();
+            setInterval(updateTime, 1000);
+            setInterval(updateBattery, 5000);
+            setInterval(updateSensorData, 3000);
+            setInterval(addLogEntry, 10000);
+            setInterval(cleanupTrails, 100);
+            initializeCharts();
+            createRippleEffect();
+            
+            // Add global mouse/touch event listeners for joystick
+            document.addEventListener('mousemove', handleJoystickMove);
+            document.addEventListener('mouseup', stopJoystick);
+            document.addEventListener('touchmove', handleJoystickMove);
+            document.addEventListener('touchend', stopJoystick);
+        });
+
+        // Enhanced ripple effect for buttons
+        function createRippleEffect() {
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.btn, .movement-btn, .pump-btn, .tab-button')) {
+                    const button = e.target.closest('.btn, .movement-btn, .pump-btn, .tab-button');
+                    const rect = button.getBoundingClientRect();
+                    const ripple = document.createElement('span');
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.width = ripple.style.height = size + 'px';
+                    ripple.style.left = x + 'px';
+                    ripple.style.top = y + 'px';
+                    ripple.style.position = 'absolute';
+                    ripple.style.borderRadius = '50%';
+                    ripple.style.background = 'rgba(255, 255, 255, 0.3)';
+                    ripple.style.transform = 'scale(0)';
+                    ripple.style.animation = 'rippleEffect 0.6s linear';
+                    ripple.style.pointerEvents = 'none';
+                    
+                    button.style.position = 'relative';
+                    button.style.overflow = 'hidden';
+                    button.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                }
+            });
+        }
+
+        // Enhanced tab switching
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update tab content with smooth transition
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            setTimeout(() => {
+                document.getElementById(tabName + '-tab').classList.add('active');
+            }, 200);
+            
+            activeTab = tabName;
+        }
+
+        // Enhanced movement controls
+        function startMovement(direction) {
+            console.log(`Moving ${direction}`);
+            
+            // Add haptic feedback simulation
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+            
+            // Add visual feedback
+            const btn = event.currentTarget;
+            btn.style.transform = 'scale(0.95)';
+        }
+
+        function stopMovement(direction) {
+            console.log(`Stop ${direction}`);
+            
+            // Remove visual feedback
+            const btn = event.currentTarget;
+            btn.style.transform = 'scale(1)';
+        }
+
+        // Enhanced servo control
+        function updateServo(value) {
+            servoPosition = parseInt(value);
+            document.getElementById('servo-value').textContent = value + '°';
+            
+            // Trigger value update animation
+            const valueElement = document.getElementById('servo-value');
+            valueElement.style.animation = 'none';
+            setTimeout(() => {
+                valueElement.style.animation = 'servoValuePulse 2.5s ease-in-out infinite';
+            }, 10);
+            
+            console.log(`Servo position: ${value}°`);
+        }
+
+        // Enhanced pump control
+        function togglePump() {
+            isPumpActive = !isPumpActive;
+            const pumpBtn = document.getElementById('pump-btn');
+            if (isPumpActive) {
+                pumpBtn.classList.add('active');
+            } else {
+                pumpBtn.classList.remove('active');
+            }
+            
+            // Add haptic feedback
+            if (navigator.vibrate) {
+                navigator.vibrate(100);
+            }
+            
+            console.log(`Pump ${isPumpActive ? 'activated' : 'deactivated'}`);
+        }
+
+        // Ultra enhanced joystick controls
+        function startJoystick(event) {
+            event.preventDefault();
+            joystickActive = true;
+            
+            // Add visual feedback
+            const joystick = document.getElementById('joystick');
+            joystick.classList.add('active');
+        }
+
+        function handleJoystickMove(event) {
+            if (!joystickActive) return;
+            
+            event.preventDefault();
+            const joystick = document.getElementById('joystick');
+            const knob = document.getElementById('joystick-knob');
+            const rect = joystick.getBoundingClientRect();
+            
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            const clientX = event.touches ? event.touches[0].clientX : event.clientX;
+            const clientY = event.touches ? event.touches[0].clientY : event.clientY;
+            
+            const x = clientX - rect.left - centerX;
+            const y = clientY - rect.top - centerY;
+            
+            const distance = Math.sqrt(x * x + y * y);
+            const maxDistance = centerX - 25;
+            
+            if (distance <= maxDistance) {
+                joystickPosition = { x, y };
+            } else {
+                const angle = Math.atan2(y, x);
+                joystickPosition = {
+                    x: Math.cos(angle) * maxDistance,
+                    y: Math.sin(angle) * maxDistance
+                };
+            }
+            
+            // Create trail effect
+            createJoystickTrail();
+            updateJoystickDisplay();
+        }
+
+        function stopJoystick() {
+            if (!joystickActive) return;
+            joystickActive = false;
+            joystickPosition = { x: 0, y: 0 };
+            
+            // Remove visual feedback
+            const joystick = document.getElementById('joystick');
+            joystick.classList.remove('active');
+            
+            updateJoystickDisplay();
+        }
+
+        function createJoystickTrail() {
+            const joystick = document.getElementById('joystick');
+            const rect = joystick.getBoundingClientRect();
+            const trail = document.createElement('div');
+            
+            trail.className = 'joystick-trail';
+            trail.style.position = 'absolute';
+            trail.style.left = (rect.width / 2 + joystickPosition.x) + 'px';
+            trail.style.top = (rect.height / 2 + joystickPosition.y) + 'px';
+            trail.style.transform = 'translate(-50%, -50%)';
+            
+            joystick.appendChild(trail);
+            trailElements.push({ element: trail, time: Date.now() });
+        }
+
+        function cleanupTrails() {
+            const now = Date.now();
+            trailElements = trailElements.filter(trail => {
+                if (now - trail.time > 500) {
+                    if (trail.element.parentNode) {
+                        trail.element.parentNode.removeChild(trail.element);
+                    }
+                    return false;
+                }
+                return true;
+            });
+        }
+
+        function updateJoystickDisplay() {
+            const knob = document.getElementById('joystick-knob');
+            knob.style.left = `calc(50% + ${joystickPosition.x}px)`;
+            knob.style.top = `calc(50% + ${joystickPosition.y}px)`;
+            
+            // Update values with smooth animation
+            const xElement = document.getElementById('joystick-x');
+            const yElement = document.getElementById('joystick-y');
+            
+            xElement.textContent = Math.round(joystickPosition.x);
+            yElement.textContent = Math.round(joystickPosition.y);
+            
+            // Trigger value update animation
+            [xElement, yElement].forEach(element => {
+                element.style.animation = 'none';
+                setTimeout(() => {
+                    element.style.animation = '';
+                }, 10);
+            });
+            
+            let direction = 'CENTER';
+            if (joystickPosition.x > 10) direction = 'RIGHT';
+            else if (joystickPosition.x < -10) direction = 'LEFT';
+            else if (joystickPosition.y > 10) direction = 'DOWN';
+            else if (joystickPosition.y < -10) direction = 'UP';
+            
+            document.getElementById('direction-value').textContent = direction;
+            
+            console.log(`Joystick: X=${Math.round(joystickPosition.x)}, Y=${Math.round(joystickPosition.y)}`);
+        }
+
+        // Enhanced battery simulation
+        function updateBattery() {
+            const change = Math.random() > 0.5 ? 1 : -1;
+            batteryLevel = Math.max(0, Math.min(100, batteryLevel + change));
+            
+            const batteryDisplay = document.getElementById('battery-display');
+            const batteryPercentage = document.getElementById('battery-percentage');
+            const batteryBarFill = document.getElementById('battery-bar-fill');
+            
+            batteryPercentage.textContent = batteryLevel + '%';
+            batteryBarFill.style.width = batteryLevel + '%';
+            
+            // Update battery color class with animation
+            batteryDisplay.className = 'battery-display';
+            if (batteryLevel > 50) {
+                batteryDisplay.classList.add('battery-high');
+            } else if (batteryLevel > 20) {
+                batteryDisplay.classList.add('battery-medium');
+            } else {
+                batteryDisplay.classList.add('battery-low');
+            }
+            
+            // Trigger update animation
+            batteryPercentage.style.animation = 'none';
+            setTimeout(() => {
+                batteryPercentage.style.animation = 'batteryPulse 3s ease-in-out infinite';
+            }, 10);
+        }
+
+        // Enhanced sensor data simulation
+        function updateSensorData() {
+            // Update temperature
+            const newTemp = sensorData.temperature[9] + (Math.random() > 0.5 ? 1 : -1);
+            sensorData.temperature = [...sensorData.temperature.slice(1), newTemp];
+            
+            // Update humidity
+            const newHumidity = sensorData.humidity[9] + (Math.random() > 0.5 ? 1 : -1);
+            sensorData.humidity = [...sensorData.humidity.slice(1), newHumidity];
+            
+            // Update pressure
+            const newPressure = sensorData.pressure[9] + (Math.random() > 0.5 ? 2 : -2);
+            sensorData.pressure = [...sensorData.pressure.slice(1), newPressure];
+            
+            // Update distance
+            const newDistance = sensorData.distance[9] + (Math.random() > 0.5 ? 3 : -3);
+            sensorData.distance = [...sensorData.distance.slice(1), newDistance];
+            
+            // Update displays with animation
+            const tempValue = document.getElementById('temp-value');
+            const humidityValue = document.getElementById('humidity-value');
+            const pressureValue = document.getElementById('pressure-value');
+            const distanceValue = document.getElementById('distance-value');
+            
+            tempValue.textContent = newTemp + '°C';
+            humidityValue.textContent = newHumidity + '%';
+            pressureValue.textContent = newPressure + 'hPa';
+            distanceValue.textContent = newDistance + 'cm';
+            
+            // Trigger value update animations
+            [tempValue, humidityValue, pressureValue, distanceValue].forEach(element => {
+                element.style.animation = 'none';
+                setTimeout(() => {
+                    element.style.animation = 'valueUpdate 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+                }, 10);
+            });
+            
+            // Update charts
+            updateChart('temp-chart', sensorData.temperature, '#3b82f6');
+            updateChart('humidity-chart', sensorData.humidity, '#10b981');
+            updateChart('pressure-chart', sensorData.pressure, '#f59e0b');
+            updateChart('distance-chart', sensorData.distance, '#8b5cf6');
+        }
+
+        function initializeCharts() {
+            updateChart('temp-chart', sensorData.temperature, '#3b82f6');
+            updateChart('humidity-chart', sensorData.humidity, '#10b981');
+            updateChart('pressure-chart', sensorData.pressure, '#f59e0b');
+            updateChart('distance-chart', sensorData.distance, '#8b5cf6');
+        }
+
+        function updateChart(chartId, data, color) {
+            const chart = document.getElementById(chartId);
+            if (!chart) return;
+            
+            const max = Math.max(...data) * 1.1;
+            const min = Math.min(...data) * 0.9;
+            
+            chart.innerHTML = '';
+            data.forEach((value, index) => {
+                const bar = document.createElement('div');
+                bar.className = 'chart-bar';
+                bar.style.height = `${((value - min) / (max - min)) * 100}%`;
+                bar.style.backgroundColor = color;
+                bar.style.opacity = 0.3 + (index / data.length) * 0.7;
+                bar.style.animationDelay = `${index * 0.1}s`;
+                chart.appendChild(bar);
+            });
+        }
+
+        // Enhanced log system
+        function addLogEntry() {
+            const logContent = document.getElementById('log-content');
+            const logTypes = ['info', 'success', 'warning', 'error'];
+            const logMessages = [
+                'Sensor reading updated',
+                'Command executed successfully',
+                'Battery level check',
+                'Network ping successful',
+                'Motor status OK',
+                'Temperature within range',
+                'Connection stable',
+                'Data transmission complete',
+                'Joystick calibrated',
+                'Servo position updated'
+            ];
+            
+            const randomType = logTypes[Math.floor(Math.random() * logTypes.length)];
+            const randomMessage = logMessages[Math.floor(Math.random() * logMessages.length)];
+            const timestamp = new Date().toLocaleTimeString();
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-${randomType}`;
+            logEntry.textContent = `[${timestamp}] ${randomMessage}`;
+            
+            logContent.appendChild(logEntry);
+            logContent.scrollTop = logContent.scrollHeight;
+            
+            // Remove old entries if too many
+            if (logContent.children.length > 20) {
+                logContent.removeChild(logContent.firstChild);
+            }
+        }
+
+        // Enhanced settings modal
+        function toggleSettings() {
+            const modal = document.getElementById('settings-modal');
+            modal.classList.toggle('hidden');
+            
+            if (!modal.classList.contains('hidden')) {
+                // Add focus trap
+                modal.focus();
+            }
+        }
+
+        function toggleSwitch(element) {
+            element.classList.toggle('active');
+            
+            // Add haptic feedback
+            if (navigator.vibrate) {
+                navigator.vibrate(30);
+            }
+        }
+
+        function updateRefreshRate(value) {
+            document.getElementById('refresh-rate-value').textContent = value;
+        }
+
+        function saveSettings() {
+            const settings = {
+                wifiSSID: document.getElementById('wifi-ssid').value,
+                wifiPassword: document.getElementById('wifi-password').value,
+                deviceName: document.getElementById('device-name').value,
+                refreshRate: document.getElementById('refresh-rate').value,
+                autoConnect: document.getElementById('auto-connect').classList.contains('active'),
+                powerSaving: document.getElementById('power-saving').classList.contains('active'),
+                connectionType: document.getElementById('connection-type').value
+            };
+            
+            console.log('Settings saved:', settings);
+            
+            // Show save feedback
+            const saveBtn = event.target;
+            const originalText = saveBtn.innerHTML;
+            saveBtn.innerHTML = '<svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"></polyline></svg> Saved!';
+            saveBtn.style.background = 'linear-gradient(45deg, #10b981, #059669)';
+            
+            setTimeout(() => {
+                saveBtn.innerHTML = originalText;
+                saveBtn.style.background = 'linear-gradient(45deg, #7c3aed, #a855f7)';
+                toggleSettings();
+            }, 1500);
+        }
+
+        // Update time with enhanced formatting
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            document.getElementById('current-time').textContent = `Last Update: ${timeString}`;
+        }
+
+        // Enhanced keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            switch(e.key) {
+                case 'Escape':
+                    if (!document.getElementById('settings-modal').classList.contains('hidden')) {
+                        toggleSettings();
+                    }
+                    break;
+                case '1':
+                    switchTab('control');
+                    break;
+                case '2':
+                    switchTab('stats');
+                    break;
+                case 's':
+                    if (e.ctrlKey || e.metaKey) {
+                        e.preventDefault();
+                        toggleSettings();
+                    }
+                    break;
+                case 'p':
+                    togglePump();
+                    break;
+                case 'ArrowUp':
+                    e.preventDefault();
+                    startMovement('forward');
+                    setTimeout(() => stopMovement('forward'), 100);
+                    break;
+                case 'ArrowDown':
+                    e.preventDefault();
+                    startMovement('backward');
+                    setTimeout(() => stopMovement('backward'), 100);
+                    break;
+            }
+        });
+
+        // Prevent context menu and scrolling on touch devices
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+
+        document.addEventListener('touchmove', function(e) {
+            if (joystickActive || e.target.closest('.slider')) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        // Enhanced error handling
+        window.addEventListener('error', function(e) {
+            console.error('Application error:', e.error);
+            addLogEntry();
+        });
+
+        // Performance monitoring
+        let lastFrameTime = performance.now();
+        function monitorPerformance() {
+            const currentTime = performance.now();
+            const deltaTime = currentTime - lastFrameTime;
+            lastFrameTime = currentTime;
+            
+            if (deltaTime > 50) { // Frame took longer than 50ms
+                console.warn('Performance warning: Frame time exceeded 50ms');
+            }
+            
+            requestAnimationFrame(monitorPerformance);
+        }
+        
+        // Start performance monitoring
+        requestAnimationFrame(monitorPerformance);
+
+        // Add CSS animation keyframes dynamically
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes rippleEffect {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
