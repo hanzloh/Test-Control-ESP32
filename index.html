@@ -12,1023 +12,545 @@
         }
 
         :root {
-            --primary-purple: #8b5cf6;
+            --primary-purple: #6d28d9;
             --primary-cyan: #06b6d4;
-            --primary-green: #10b981;
-            --primary-blue: #3b82f6;
-            --primary-orange: #f59e0b;
+            --primary-green: #22c55e;
+            --primary-blue: #2563eb;
+            --primary-orange: #f97316;
             --primary-red: #ef4444;
             
-            --bg-primary: rgba(255, 255, 255, 0.05);
-            --bg-secondary: rgba(255, 255, 255, 0.02);
-            --bg-tertiary: rgba(0, 0, 0, 0.2);
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-accent: #334155;
             
-            --border-primary: rgba(255, 255, 255, 0.1);
-            --border-secondary: rgba(139, 92, 246, 0.2);
+            --border-light: rgba(255, 255, 255, 0.1);
+            --border-accent: rgba(109, 40, 217, 0.3);
             
-            --text-primary: #ffffff;
-            --text-secondary: #e5e7eb;
-            --text-muted: #9ca3af;
+            --text-primary: #f3f4f6;
+            --text-secondary: #d1d5db;
+            --text-muted: #6b7280;
             
-            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.15);
-            --shadow-md: 0 8px 25px rgba(0, 0, 0, 0.25);
-            --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.35);
-            --shadow-glow: 0 0 30px rgba(139, 92, 246, 0.3);
-            
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
-            --radius-xl: 20px;
-            
+            --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.2);
+            --radius-md: 10px;
             --spacing-xs: 4px;
             --spacing-sm: 8px;
             --spacing-md: 16px;
-            --spacing-lg: 24px;
-            --spacing-xl: 32px;
+            --spacing-lg: 20px;
+            --font-size-base: 14px;
+            --font-size-lg: 18px;
         }
 
-        /* Mobile-first responsive variables */
         @media (max-width: 768px) {
             :root {
-                --spacing-xs: 3px;
                 --spacing-sm: 6px;
                 --spacing-md: 12px;
                 --spacing-lg: 16px;
-                --spacing-xl: 20px;
-                
-                --radius-sm: 6px;
                 --radius-md: 8px;
-                --radius-lg: 12px;
-                --radius-xl: 16px;
+                --font-size-base: 13px;
+                --font-size-lg: 16px;
             }
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a0033 25%, #330066 50%, #1a0033 75%, #0a0a0a 100%);
-            background-size: 400% 400%;
-            animation: gradientShift 20s ease infinite;
+            background: var(--bg-dark);
             min-height: 100vh;
             color: var(--text-primary);
-            position: relative;
-            overflow-x: hidden;
+            font-size: var(--font-size-base);
             -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
         }
 
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        /* Background Effects */
-        .background-effects {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .floating-orbs {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-        }
-
-        .orb {
-            position: absolute;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(139, 92, 246, 0.3), rgba(139, 92, 246, 0.1), transparent);
-            animation: floatOrb 25s ease-in-out infinite;
-            filter: blur(1px);
-        }
-
-        .orb:nth-child(1) { width: 180px; height: 180px; left: 10%; animation-delay: 0s; }
-        .orb:nth-child(2) { width: 120px; height: 120px; right: 15%; animation-delay: 8s; }
-        .orb:nth-child(3) { width: 80px; height: 80px; left: 60%; animation-delay: 16s; }
-
-        @keyframes floatOrb {
-            0%, 100% { transform: translateY(100vh) scale(0.8) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            50% { transform: translateY(-10vh) scale(1.1) rotate(180deg); opacity: 0.6; }
-            90% { opacity: 1; }
-            100% { transform: translateY(-110vh) scale(0.6) rotate(360deg); opacity: 0; }
-        }
-
-        .grid-overlay {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(139, 92, 246, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(139, 92, 246, 0.03) 1px, transparent 1px);
-            background-size: 60px 60px;
-            animation: gridMove 30s linear infinite;
-        }
-
-        @keyframes gridMove {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(60px, 60px); }
-        }
-
-        /* Main Container */
         .container {
             width: 100%;
-            min-height: 100vh;
-            max-width: 1400px;
+            max-width: 960px;
             margin: 0 auto;
-            padding: var(--spacing-lg);
+            padding: var(--spacing-md);
             display: flex;
             flex-direction: column;
-            gap: var(--spacing-lg);
-            position: relative;
-            z-index: 2;
+            gap: var(--spacing-md);
         }
 
-        /* Card System */
         .card {
-            background: var(--bg-primary);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border-primary);
-            border-radius: var(--radius-xl);
-            padding: var(--spacing-lg);
-            position: relative;
-            overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: var(--shadow-md);
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
-            transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .card:hover::before {
-            left: 100%;
-        }
-
-        .card:hover {
-            transform: translateY(-2px);
-            border-color: var(--border-secondary);
-            box-shadow: var(--shadow-lg), var(--shadow-glow);
-        }
-
-        /* Header */
-        .header {
-            flex-shrink: 0;
+            background: linear-gradient(145deg, var(--bg-card), #1a2233);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            box-shadow: var(--shadow-sm);
         }
 
         .header-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: var(--spacing-sm);
             flex-wrap: wrap;
-            gap: var(--spacing-md);
         }
 
         .title {
-            font-size: clamp(20px, 5vw, 28px);
-            font-weight: 800;
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--primary-purple);
             display: flex;
             align-items: center;
-            gap: var(--spacing-md);
-            background: linear-gradient(45deg, var(--primary-purple), var(--primary-cyan));
-            background-size: 200% 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: titleGradient 4s ease infinite;
-            letter-spacing: -0.5px;
-            flex: 1;
-            min-width: 0;
-        }
-
-        @keyframes titleGradient {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
+            gap: var(--spacing-sm);
         }
 
         .status-dot {
-            width: 12px;
-            height: 12px;
-            background: radial-gradient(circle, var(--primary-green), #059669);
+            width: 8px;
+            height: 8px;
+            background: var(--primary-green);
             border-radius: 50%;
-            animation: statusPulse 2s ease infinite;
-            box-shadow: 0 0 20px var(--primary-green);
-            flex-shrink: 0;
-        }
-
-        @keyframes statusPulse {
-            0%, 100% { 
-                transform: scale(1);
-                box-shadow: 0 0 20px var(--primary-green);
-            }
-            50% { 
-                transform: scale(1.2);
-                box-shadow: 0 0 30px var(--primary-green);
-            }
+            box-shadow: 0 0 4px var(--primary-green);
         }
 
         .header-controls {
             display: flex;
             align-items: center;
-            gap: var(--spacing-md);
-            flex-shrink: 0;
+            gap: var(--spacing-sm);
         }
 
         .wifi-status {
             display: flex;
             align-items: center;
-            gap: var(--spacing-sm);
-            font-size: clamp(12px, 3vw, 14px);
-            font-weight: 500;
-            padding: var(--spacing-sm) var(--spacing-md);
-            background: rgba(16, 185, 129, 0.1);
-            border-radius: var(--radius-lg);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            backdrop-filter: blur(10px);
-            animation: wifiGlow 3s ease-in-out infinite;
-            white-space: nowrap;
-        }
-
-        @keyframes wifiGlow {
-            0%, 100% { 
-                box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
-                border-color: rgba(16, 185, 129, 0.2);
-            }
-            50% { 
-                box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
-                border-color: rgba(16, 185, 129, 0.4);
-            }
+            gap: var(--spacing-xs);
+            font-size: var(--font-size-base);
+            padding: var(--spacing-sm);
+            background: rgba(34, 197, 94, 0.1);
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(34, 197, 94, 0.2);
         }
 
         .wifi-icon {
-            width: 16px;
-            height: 16px;
+            width: 12px;
+            height: 12px;
             color: var(--primary-green);
-            flex-shrink: 0;
         }
 
         .settings-btn {
-            background: var(--bg-primary);
-            border: 1px solid var(--border-primary);
+            background: var(--bg-accent);
+            border: 1px solid var(--border-light);
             color: var(--text-primary);
-            padding: var(--spacing-md);
+            padding: var(--spacing-xs);
             border-radius: var(--radius-md);
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(10px);
+            width: 32px;
+            height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-width: 44px;
-            min-height: 44px;
+            transition: all 0.2s ease;
         }
 
         .settings-btn:hover {
-            transform: rotate(90deg) scale(1.05);
-            border-color: var(--border-secondary);
-            box-shadow: var(--shadow-glow);
+            border-color: var(--border-accent);
+            background: var(--bg-card);
         }
 
-        /* Tab System */
         .tabs {
-            flex: 1;
             display: flex;
             flex-direction: column;
-            min-height: 0;
         }
 
         .tab-list {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: var(--spacing-sm);
-            margin-bottom: var(--spacing-lg);
-            background: var(--bg-secondary);
-            backdrop-filter: blur(15px);
-            border: 1px solid var(--border-primary);
-            border-radius: var(--radius-lg);
-            padding: var(--spacing-sm);
+            gap: var(--spacing-xs);
+            margin-bottom: var(--spacing-md);
+            background: var(--bg-accent);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-xs);
         }
 
         .tab-button {
             background: transparent;
             border: none;
             color: var(--text-secondary);
-            padding: var(--spacing-md) var(--spacing-lg);
+            padding: var(--spacing-sm);
             border-radius: var(--radius-md);
             cursor: pointer;
+            font-weight: 500;
+            font-size: var(--font-size-base);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: var(--spacing-sm);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-weight: 600;
-            font-size: clamp(12px, 3vw, 14px);
-            position: relative;
-            min-height: 44px;
-        }
-
-        .tab-button::before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            width: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--primary-purple), var(--primary-cyan));
-            border-radius: 1px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            transform: translateX(-50%);
-        }
-
-        .tab-button:hover {
-            color: var(--text-primary);
-        }
-
-        .tab-button:hover::before {
-            width: 60%;
+            gap: var(--spacing-xs);
+            transition: all 0.2s ease;
         }
 
         .tab-button.active {
-            background: var(--bg-primary);
+            background: var(--primary-purple);
             color: var(--text-primary);
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border-secondary);
-        }
-
-        .tab-button.active::before {
-            width: 80%;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
         }
 
         .tab-content {
-            flex: 1;
             display: none;
-            min-height: 0;
         }
 
         .tab-content.active {
             display: flex;
             flex-direction: column;
-            animation: tabFadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        @keyframes tabFadeIn {
-            from { 
-                opacity: 0; 
-                transform: translateY(10px); 
-            }
-            to { 
-                opacity: 1; 
-                transform: translateY(0); 
-            }
-        }
-
-        /* Grid System - Mobile First */
         .control-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: var(--spacing-lg);
-            flex: 1;
+            gap: var(--spacing-md);
         }
 
         .panel {
             display: flex;
             flex-direction: column;
-            height: auto;
-            min-height: 200px;
-            animation: panelSlideIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .panel:nth-child(1) { animation-delay: 0.1s; }
-        .panel:nth-child(2) { animation-delay: 0.2s; }
-        .panel:nth-child(3) { animation-delay: 0.3s; }
-        .panel:nth-child(4) { animation-delay: 0.4s; }
-
-        @keyframes panelSlideIn {
-            from { 
-                opacity: 0; 
-                transform: translateY(20px); 
-            }
-            to { 
-                opacity: 1; 
-                transform: translateY(0); 
-            }
         }
 
         .panel-header {
-            margin-bottom: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-bottom: var(--spacing-sm);
-            border-bottom: 1px solid var(--border-primary);
-            flex-wrap: wrap;
-            gap: var(--spacing-sm);
         }
 
         .panel-title {
-            font-size: clamp(14px, 4vw, 18px);
-            font-weight: 700;
-            background: linear-gradient(45deg, var(--primary-purple), var(--primary-cyan));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: -0.3px;
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            color: var(--primary-purple);
         }
 
         .panel-content {
             flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            gap: var(--spacing-lg);
+            gap: var(--spacing-sm);
         }
 
-        /* Movement Controls */
         .movement-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-md);
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--spacing-sm);
         }
 
         .movement-btn {
-            position: relative;
             cursor: pointer;
-            user-select: none;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            touch-action: manipulation;
-        }
-
-        .movement-btn:active {
-            transform: scale(0.98);
-        }
-
-        .movement-btn-shadow {
-            position: absolute;
-            inset: 0;
-            border-radius: var(--radius-md);
-            transform: translateY(4px);
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            filter: blur(4px);
-        }
-
-        .movement-btn:active .movement-btn-shadow {
-            transform: translateY(2px);
         }
 
         .movement-btn-face {
-            position: relative;
-            padding: var(--spacing-lg);
+            padding: var(--spacing-md);
             border-radius: var(--radius-md);
-            border: 1px solid var(--border-primary);
-            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-light);
+            background: var(--bg-accent);
+            font-weight: 500;
+            font-size: var(--font-size-base);
+            text-align: center;
+            color: var(--text-primary);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 700;
-            font-size: clamp(12px, 3vw, 14px);
-            gap: var(--spacing-sm);
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(10px);
-            letter-spacing: 0.5px;
-            min-height: 60px;
-        }
-
-        .movement-btn:active .movement-btn-face {
-            transform: translateY(2px);
-        }
-
-        .movement-btn-face::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent 50%);
-            border-radius: var(--radius-md);
-            pointer-events: none;
-        }
-
-        .forward-btn .movement-btn-shadow {
-            background: linear-gradient(135deg, var(--primary-blue), #1d4ed8);
+            gap: var(--spacing-xs);
+            transition: all 0.2s ease;
         }
 
         .forward-btn .movement-btn-face {
-            background: linear-gradient(135deg, var(--primary-blue), #1e40af);
-            color: white;
-        }
-
-        .backward-btn .movement-btn-shadow {
-            background: linear-gradient(135deg, var(--primary-red), #dc2626);
+            background: var(--primary-blue);
+            color: var(--text-primary);
         }
 
         .backward-btn .movement-btn-face {
-            background: linear-gradient(135deg, var(--primary-red), #dc2626);
-            color: white;
+            background: var(--primary-red);
+            color: var(--text-primary);
         }
 
-        /* Joystick - Mobile Optimized */
+        .movement-btn:hover .movement-btn-face {
+            border-color: var(--border-accent);
+            transform: translateY(-1px);
+        }
+
         .joystick-container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: var(--spacing-lg);
+            gap: var(--spacing-sm);
         }
 
         .joystick {
             position: relative;
-            width: clamp(100px, 25vw, 140px);
-            height: clamp(100px, 25vw, 140px);
-            background: 
-                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1), transparent 50%),
-                linear-gradient(135deg, #2a2a3a, #1a1a2a);
+            width: 80px;
+            height: 80px;
+            background: var(--bg-accent);
             border-radius: 50%;
-            border: 2px solid var(--border-secondary);
-            box-shadow: 
-                var(--shadow-glow),
-                inset 0 0 20px rgba(0, 0, 0, 0.3);
+            border: 2px solid var(--border-light);
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             touch-action: none;
-        }
-
-        .joystick.active {
-            transform: scale(1.02);
-            border-color: var(--primary-purple);
-            box-shadow: 
-                0 0 40px rgba(139, 92, 246, 0.4),
-                inset 0 0 25px rgba(0, 0, 0, 0.4);
         }
 
         .joystick-knob {
             position: absolute;
-            width: clamp(30px, 8vw, 45px);
-            height: clamp(30px, 8vw, 45px);
-            background: 
-                radial-gradient(circle at 30% 30%, #ffffff, var(--primary-purple) 40%, #7c3aed 70%);
-            border-radius: 50%;
-            box-shadow: 
-                var(--shadow-sm),
-                0 0 15px rgba(139, 92, 246, 0.4);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            transform: translate(-50%, -50%);
-            transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
-            top: 50%;
-            left: 50%;
-            cursor: grab;
-        }
-
-        .joystick-knob:active {
-            cursor: grabbing;
-            transform: translate(-50%, -50%) scale(1.05);
-        }
-
-        .joystick-knob::before {
-            content: '';
-            position: absolute;
-            top: 15%;
-            left: 15%;
-            width: 70%;
-            height: 70%;
-            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.6), transparent 60%);
-            border-radius: 50%;
-        }
-
-        .joystick-center {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 4px;
-            height: 4px;
-            background: radial-gradient(circle, #ffffff, var(--primary-purple));
+            width: 24px;
+            height: 24px;
+            background: var(--primary-purple);
             border-radius: 50%;
             transform: translate(-50%, -50%);
-            box-shadow: 0 0 10px var(--primary-purple);
-            animation: centerPulse 2s ease-in-out infinite;
-        }
-
-        @keyframes centerPulse {
-            0%, 100% { 
-                opacity: 1; 
-                transform: translate(-50%, -50%) scale(1);
-            }
-            50% { 
-                opacity: 0.7; 
-                transform: translate(-50%, -50%) scale(1.3);
-            }
+            top: 50%;
+            left: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .joystick-values {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: var(--spacing-md);
+            gap: var(--spacing-sm);
             width: 100%;
         }
 
         .joystick-value {
-            background: var(--bg-tertiary);
-            padding: var(--spacing-md);
+            background: var(--bg-card);
+            padding: var(--spacing-sm);
             border-radius: var(--radius-md);
-            border: 1px solid var(--border-primary);
-            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-light);
             text-align: center;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .joystick-value:hover {
-            transform: translateY(-2px);
-            border-color: var(--border-secondary);
         }
 
         .joystick-number {
-            font-size: clamp(14px, 4vw, 16px);
-            font-weight: 700;
+            font-size: var(--font-size-base);
+            font-weight: 600;
             color: var(--primary-purple);
-            text-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
         }
 
         .joystick-axis {
-            font-size: clamp(10px, 3vw, 12px);
+            font-size: 12px;
             color: var(--text-muted);
-            margin-top: var(--spacing-xs);
-            font-weight: 500;
         }
 
         .direction-indicator {
             text-align: center;
-            padding: var(--spacing-md);
-            background: var(--bg-tertiary);
+            padding: var(--spacing-sm);
+            background: var(--bg-card);
             border-radius: var(--radius-md);
-            border: 1px solid var(--border-primary);
-            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-light);
         }
 
         .direction-label {
-            font-size: clamp(10px, 3vw, 12px);
+            font-size: 12px;
             color: var(--text-muted);
-            margin-bottom: var(--spacing-xs);
-            font-weight: 500;
         }
 
         .direction-value {
-            font-size: clamp(14px, 4vw, 16px);
-            font-weight: 700;
-            text-shadow: 0 0 10px currentColor;
-        }
-
-        /* Pump Button */
-        .pump-btn {
-            position: relative;
-            cursor: pointer;
-            user-select: none;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            touch-action: manipulation;
-        }
-
-        .pump-btn:active {
-            transform: scale(0.95);
-        }
-
-        .pump-btn-shadow {
-            position: absolute;
-            inset: 0;
-            border-radius: var(--radius-md);
-            transform: translateY(2px);
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            filter: blur(2px);
-        }
-
-        .pump-btn:active .pump-btn-shadow {
-            transform: translateY(1px);
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            color: var(--primary-purple);
         }
 
         .pump-btn-face {
-            position: relative;
-            padding: var(--spacing-md);
+            padding: var(--spacing-xs);
             border-radius: var(--radius-md);
-            border: 1px solid var(--border-primary);
-            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-light);
+            background: var(--bg-accent);
+            width: 32px;
+            height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(10px);
-            min-width: 44px;
-            min-height: 44px;
-        }
-
-        .pump-btn:active .pump-btn-face {
-            transform: translateY(1px);
-        }
-
-        .pump-btn.active .pump-btn-shadow {
-            background: linear-gradient(135deg, var(--primary-cyan), #0891b2);
+            transition: all 0.2s ease;
         }
 
         .pump-btn.active .pump-btn-face {
-            background: linear-gradient(135deg, var(--primary-cyan), #0891b2);
-            color: white;
-            animation: pumpActive 1.5s ease-in-out infinite;
-        }
-
-        @keyframes pumpActive {
-            0%, 100% { 
-                box-shadow: var(--shadow-sm), 0 0 15px rgba(6, 182, 212, 0.3);
-            }
-            50% { 
-                box-shadow: var(--shadow-sm), 0 0 25px rgba(6, 182, 212, 0.5);
-            }
-        }
-
-        .pump-btn:not(.active) .pump-btn-shadow {
-            background: linear-gradient(135deg, #6b7280, #4b5563);
+            background: var(--primary-cyan);
+            color: var(--text-primary);
+            box-shadow: 0 0 6px rgba(6, 182, 212, 0.5);
         }
 
         .pump-btn:not(.active) .pump-btn-face {
-            background: linear-gradient(135deg, #6b7280, #4b5563);
+            background: var(--bg-accent);
             color: var(--text-secondary);
         }
 
         .pump-icon {
-            width: 20px;
-            height: 20px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 14px;
+            height: 14px;
         }
 
-        .pump-btn.active .pump-icon {
-            animation: pumpSpin 2s linear infinite;
-        }
-
-        @keyframes pumpSpin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        /* Battery Display */
         .battery-display {
             text-align: center;
-            padding: var(--spacing-lg);
+            padding: var(--spacing-sm);
         }
 
         .battery-icon {
-            width: clamp(32px, 8vw, 48px);
-            height: clamp(32px, 8vw, 48px);
-            margin: 0 auto var(--spacing-md);
-            filter: drop-shadow(0 0 10px currentColor);
-            animation: batteryFloat 3s ease-in-out infinite;
-        }
-
-        @keyframes batteryFloat {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-3px); }
+            width: 28px;
+            height: 28px;
+            margin-bottom: var(--spacing-xs);
         }
 
         .battery-percentage {
-            font-size: clamp(24px, 6vw, 32px);
-            font-weight: 800;
-            margin-bottom: var(--spacing-sm);
-            text-shadow: 0 0 20px currentColor;
-            line-height: 1;
+            font-size: var(--font-size-lg);
+            font-weight: 600;
         }
 
         .battery-label {
-            font-size: clamp(12px, 3vw, 14px);
+            font-size: 12px;
             color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .battery-bar {
-            width: 100%;
-            margin: var(--spacing-lg) 0;
         }
 
         .battery-bar-bg {
-            background: var(--bg-tertiary);
-            border-radius: var(--radius-sm);
-            height: 12px;
-            overflow: hidden;
-            border: 1px solid var(--border-primary);
+            background: var(--bg-accent);
+            border-radius: 4px;
+            height: 6px;
+            border: 1px solid var(--border-light);
+            margin-top: var(--spacing-xs);
         }
 
         .battery-bar-fill {
             height: 100%;
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            border-radius: var(--radius-sm);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .battery-bar-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            animation: batteryShine 3s linear infinite;
-        }
-
-        @keyframes batteryShine {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
+            border-radius: 4px;
+            transition: width 0.3s ease;
         }
 
         .battery-high {
             color: var(--primary-green);
         }
 
+        .battery-high .battery-bar-fill {
+            background: var(--primary-green);
+        }
+
         .battery-medium {
             color: var(--primary-orange);
+        }
+
+        .battery-medium .battery-bar-fill {
+            background: var(--primary-orange);
         }
 
         .battery-low {
             color: var(--primary-red);
         }
 
-        .battery-high .battery-bar-fill {
-            background: linear-gradient(90deg, var(--primary-green), #059669);
-        }
-
-        .battery-medium .battery-bar-fill {
-            background: linear-gradient(90deg, var(--primary-orange), #d97706);
-        }
-
         .battery-low .battery-bar-fill {
-            background: linear-gradient(90deg, var(--primary-red), #dc2626);
+            background: var(--primary-red);
         }
 
-        /* System Stats */
         .system-stats {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: var(--spacing-md);
+            gap: var(--spacing-sm);
         }
 
         .stat-item {
-            background: var(--bg-tertiary);
-            padding: var(--spacing-md);
+            background: var(--bg-card);
+            padding: var(--spacing-sm);
             border-radius: var(--radius-md);
-            border: 1px solid var(--border-primary);
-            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-light);
             text-align: center;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .stat-item:hover {
-            transform: translateY(-2px);
-            border-color: var(--border-secondary);
-            box-shadow: var(--shadow-sm);
         }
 
         .stat-value {
-            font-size: clamp(14px, 4vw, 18px);
-            font-weight: 700;
-            margin-bottom: var(--spacing-xs);
-            text-shadow: 0 0 10px currentColor;
-            line-height: 1;
+            font-size: var(--font-size-base);
+            font-weight: 600;
         }
 
         .stat-label {
-            font-size: clamp(9px, 2.5vw, 11px);
+            font-size: 12px;
             color: var(--text-muted);
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
-        /* Servo Control */
         .servo-control {
-            margin-top: var(--spacing-lg);
+            margin-top: var(--spacing-sm);
         }
 
         .servo-label {
-            font-size: clamp(14px, 4vw, 16px);
-            font-weight: 600;
-            margin-bottom: var(--spacing-md);
-            text-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+            font-size: var(--font-size-base);
+            font-weight: 500;
+            margin-bottom: var(--spacing-xs);
         }
 
         .servo-container {
-            background: var(--bg-tertiary);
-            padding: var(--spacing-lg);
+            background: grid;
+            gap: 10px;
+            padding: var(--spacing-sm);
             border-radius: var(--radius-md);
-            border: 1px solid var(--border-primary);
-            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-light);
         }
 
         .servo-values {
             display: flex;
             justify-content: space-between;
-            font-size: clamp(12px, 3vw, 14px);
+            font-size: 12px;
             color: var(--text-secondary);
-            margin-bottom: var(--spacing-md);
-            font-weight: 500;
+            margin-bottom: var(--spacing-xs);
         }
 
         .servo-current {
+            font-weight: 600;
             color: var(--primary-purple);
-            font-weight: 700;
-            text-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
         }
 
         .slider {
             width: 100%;
-            height: 8px;
-            background: var(--bg-tertiary);
+            height: 6px;
+            background: var(--bg-accent);
             border-radius: 4px;
-            outline: none;
+            border: 1px solid var(--border-light);
             -webkit-appearance: none;
-            border: 1px solid var(--border-primary);
             cursor: pointer;
         }
 
         .slider::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 24px;
-            height: 24px;
-            background: linear-gradient(45deg, var(--primary-purple), var(--primary-cyan));
+            width: 14px;
+            height: 14px;
+            background: var(--primary-purple);
             border-radius: 50%;
             cursor: pointer;
-            box-shadow: var(--shadow-sm), 0 0 10px rgba(139, 92, 246, 0.3);
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .slider::-webkit-slider-thumb:hover {
-            transform: scale(1.1);
-            box-shadow: var(--shadow-md), 0 0 15px rgba(139, 92, 246, 0.5);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         }
 
         .slider::-moz-range-thumb {
-            width: 24px;
-            height: 24px;
-            background: linear-gradient(45deg, var(--primary-purple), var(--primary-cyan));
+            width: 14px;
+            height: 14px;
+            background: var(--primary-purple);
             border-radius: 50%;
             cursor: pointer;
             border: none;
-            box-shadow: var(--shadow-sm), 0 0 10px rgba(139, 92, 246, 0.3);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         }
 
-        /* Stats Page */
         .stats-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: var(--spacing-lg);
-            flex: 1;
+            gap: var(--spacing-md);
         }
 
         .sensor-data {
             display: grid;
             grid-template-columns: 1fr;
-            gap: var(--spacing-lg);
+            gap: var(--spacing-sm);
         }
 
         .mini-chart {
-            background: var(--bg-tertiary);
-            padding: var(--spacing-lg);
+            background: var(--bg-card);
+            padding: var(--spacing-sm);
             border-radius: var(--radius-md);
-            border: 1px solid var(--border-primary);
-            backdrop-filter: blur(10px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .mini-chart:hover {
-            transform: translateY(-2px);
-            border-color: var(--border-secondary);
-            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-light);
         }
 
         .chart-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: var(--spacing-md);
+            margin-bottom: var(--spacing-xs);
         }
 
         .chart-label {
-            font-size: clamp(12px, 3vw, 14px);
+            font-size: 12px;
             color: var(--text-muted);
-            font-weight: 500;
         }
 
         .chart-value {
-            font-size: clamp(14px, 4vw, 16px);
-            font-weight: 700;
-            text-shadow: 0 0 10px currentColor;
+            font-size: var(--font-size-base);
+            font-weight: 600;
         }
 
         .chart-bars {
-            height: 50px;
+            height: 24px;
             display: flex;
-            align-items: end;
+            align-items: flex-end;
             gap: 2px;
         }
 
@@ -1036,156 +558,95 @@
             flex: 1;
             background: var(--primary-blue);
             border-radius: 2px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
+            transition: height 0.3s ease;
         }
 
-        .chart-bar::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to top, transparent, rgba(255, 255, 255, 0.2));
-            animation: barShine 2s linear infinite;
-        }
-
-        @keyframes barShine {
-            0% { transform: translateY(100%); }
-            100% { transform: translateY(-100%); }
-        }
-
-        .chart-bar:hover {
-            transform: scaleY(1.05);
-            filter: brightness(1.2);
-        }
-
-        /* System Info */
         .system-info {
             display: flex;
             flex-direction: column;
-            gap: var(--spacing-lg);
+            gap: var(--spacing-sm);
         }
 
         .progress-item {
-            margin-bottom: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
         }
 
         .progress-header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: var(--spacing-sm);
+            margin-bottom: var(--spacing-xs);
         }
 
         .progress-label {
-            font-size: clamp(12px, 3vw, 14px);
+            font-size: 12px;
             color: var(--text-muted);
-            font-weight: 500;
         }
 
         .progress-value {
-            font-size: clamp(12px, 3vw, 14px);
-            font-weight: 700;
-            text-shadow: 0 0 10px currentColor;
+            font-size: var(--font-size-base);
+            font-weight: 600;
         }
 
         .progress-bar {
             width: 100%;
-            height: 8px;
-            background: var(--bg-tertiary);
+            height: 6px;
+            background: var(--bg-accent);
             border-radius: 4px;
-            overflow: hidden;
-            border: 1px solid var(--border-primary);
+            border: 1px solid var(--border-light);
         }
 
         .progress-fill {
             height: 100%;
             border-radius: 4px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .progress-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            animation: progressShine 2s linear infinite;
-        }
-
-        @keyframes progressShine {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
+            transition: width 0.3s ease;
         }
 
         .info-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: var(--spacing-md);
-            margin-top: var(--spacing-lg);
+            gap: var(--spacing-sm);
         }
 
         .info-item {
-            background: var(--bg-tertiary);
-            padding: var(--spacing-md);
+            background: var(--bg-card);
+            padding: var(--spacing-sm);
             border-radius: var(--radius-md);
-            border: 1px solid var(--border-primary);
-            backdrop-filter: blur(10px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .info-item:hover {
-            transform: translateY(-2px);
-            border-color: var(--border-secondary);
+            border: 1px solid var(--border-light);
         }
 
         .info-label {
-            font-size: clamp(10px, 2.5vw, 12px);
+            font-size: 12px;
             color: var(--text-muted);
-            margin-bottom: var(--spacing-xs);
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         .info-value {
-            font-size: clamp(12px, 3vw, 14px);
-            font-weight: 700;
-            color: var(--text-primary);
+            font-size: var(--font-size-base);
+            font-weight: 600;
         }
 
         .log-container {
-            margin-top: var(--spacing-lg);
+            margin-top: var(--spacing-sm);
         }
 
         .log-header {
-            font-size: clamp(12px, 3vw, 14px);
+            font-size: 12px;
             color: var(--text-muted);
-            margin-bottom: var(--spacing-sm);
-            font-weight: 500;
+            margin-bottom: var(--spacing-xs);
         }
 
         .log-content {
-            background: var(--bg-tertiary);
-            padding: var(--spacing-md);
+            background: var(--bg-card);
+            padding: var(--spacing-sm);
             border-radius: var(--radius-md);
-            border: 1px solid var(--border-primary);
-            height: 120px;
+            border: 1px solid var(--border-light);
+            height: 80px;
             overflow-y: auto;
-            font-size: clamp(10px, 2.5vw, 12px);
-            font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
-            backdrop-filter: blur(10px);
+            font-size: 12px;
+            font-family: monospace;
         }
 
         .log-entry {
             margin-bottom: 2px;
-            line-height: 1.4;
         }
 
         .log-success { color: var(--primary-green); }
@@ -1193,555 +654,302 @@
         .log-error { color: var(--primary-red); }
         .log-info { color: var(--text-secondary); }
 
-        /* Footer */
-        .footer {
-            flex-shrink: 0;
-        }
-
         .footer-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: clamp(12px, 3vw, 14px);
+            font-size: 12px;
             color: var(--text-muted);
-            padding: var(--spacing-md) 0;
-            font-weight: 500;
-            flex-wrap: wrap;
-            gap: var(--spacing-sm);
+            padding: var(--spacing-sm) 0;
         }
 
-        /* Enhanced Settings Modal */
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(20px);
+            background: rgba(0, 0, 0, 0.7);
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 50;
-            padding: var(--spacing-lg);
-            animation: modalFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        @keyframes modalFadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            z-index: 1000;
+            padding: var(--spacing-md);
         }
 
         .modal-content {
             width: 100%;
-            max-width: 500px;
-            max-height: 90vh;
-            background: rgba(17, 24, 39, 0.95);
-            border: 1px solid var(--border-secondary);
-            border-radius: var(--radius-xl);
-            padding: 0;
-            animation: modalSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(20px);
-            box-shadow: var(--shadow-lg);
+            max-width: 360px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
             display: flex;
             flex-direction: column;
-            overflow: hidden;
-        }
-
-        @keyframes modalSlideIn {
-            from { 
-                opacity: 0; 
-                transform: translateY(-20px) scale(0.95); 
-            }
-            to { 
-                opacity: 1; 
-                transform: translateY(0) scale(1); 
-            }
+            max-height: 80vh;
         }
 
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: var(--spacing-xl);
-            border-bottom: 1px solid var(--border-primary);
-            background: var(--bg-secondary);
-            flex-wrap: wrap;
-            gap: var(--spacing-md);
-        }
-
-        .modal-title-section {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-md);
-            flex: 1;
-            min-width: 0;
-        }
-
-        .modal-icon {
-            width: 24px;
-            height: 24px;
-            color: var(--primary-purple);
-            flex-shrink: 0;
+            padding: var(--spacing-sm);
+            border-bottom: 1px solid var(--border-light);
         }
 
         .modal-title {
-            font-size: clamp(16px, 4vw, 20px);
-            font-weight: 700;
-            background: linear-gradient(45deg, var(--primary-purple), var(--primary-cyan));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            color: var(--primary-purple);
         }
 
         .modal-subtitle {
-            font-size: clamp(12px, 3vw, 14px);
+            font-size: 12px;
             color: var(--text-muted);
-            margin-top: 2px;
-            font-weight: 400;
         }
 
         .close-btn {
-            background: var(--bg-primary);
-            border: 1px solid var(--border-primary);
-            color: var(--text-muted);
+            background: var(--bg-accent);
+            border: 1px solid var(--border-light);
+            color: var(--text-secondary);
             cursor: pointer;
-            padding: var(--spacing-sm);
-            border-radius: var(--radius-sm);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(10px);
-            min-width: 44px;
-            min-height: 44px;
+            padding: var(--spacing-xs);
+            border-radius: var(--radius-md);
+            width: 28px;
+            height: 28px;
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-shrink: 0;
+            transition: all 0.2s ease;
         }
 
         .close-btn:hover {
-            color: var(--text-primary);
-            transform: rotate(90deg);
-            border-color: var(--border-secondary);
+            background: var(--bg-card);
+            border-color: var(--border-accent);
         }
 
         .settings-content {
-            flex: 1;
+            padding: var(--spacing-md);
             overflow-y: auto;
-            padding: var(--spacing-lg);
+            flex: 1;
         }
 
         .settings-section {
-            margin-bottom: var(--spacing-xl);
-            border: 1px solid var(--border-primary);
-            border-radius: var(--radius-lg);
-            background: var(--bg-secondary);
-            overflow: hidden;
+            margin-bottom: var(--spacing-md);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
         }
 
         .section-header {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-md);
-            padding: var(--spacing-lg);
-            background: var(--bg-tertiary);
-            border-bottom: 1px solid var(--border-primary);
-        }
-
-        .section-icon {
-            width: 20px;
-            height: 20px;
-            color: var(--primary-purple);
-            flex-shrink: 0;
-        }
-
-        .section-info {
-            flex: 1;
-            min-width: 0;
+            padding: var(--spacing-sm);
+            background: var(--bg-accent);
+            border-bottom: 1px solid var(--border-light);
         }
 
         .section-title {
-            font-size: clamp(14px, 4vw, 16px);
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 2px;
+            font-size: var(--font-size-base);
+            font-weight: 500;
         }
 
         .section-description {
-            font-size: clamp(11px, 3vw, 13px);
+            font-size: 12px;
             color: var(--text-muted);
-            line-height: 1.4;
         }
 
         .section-content {
-            padding: var(--spacing-lg);
+            padding: var(--spacing-sm);
             display: flex;
             flex-direction: column;
-            gap: var(--spacing-lg);
+            gap: var(--spacing-sm);
         }
 
         .input-group {
             display: flex;
             flex-direction: column;
-            gap: var(--spacing-sm);
+            gap: var(--spacing-xs);
         }
 
         .input-label {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: clamp(12px, 3vw, 14px);
+            font-size: var(--font-size-base);
             font-weight: 500;
             color: var(--text-secondary);
-            flex-wrap: wrap;
-            gap: var(--spacing-xs);
-        }
-
-        .label-text {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-xs);
         }
 
         .label-required {
             color: var(--primary-red);
-            font-size: clamp(10px, 2.5vw, 12px);
+            font-size: 12px;
         }
 
         .label-optional {
             color: var(--text-muted);
-            font-size: clamp(10px, 2.5vw, 12px);
-            font-weight: 400;
-        }
-
-        .label-value {
-            color: var(--primary-purple);
-            font-weight: 600;
-            font-size: clamp(11px, 3vw, 13px);
-        }
-
-        .input-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .input-icon {
-            position: absolute;
-            left: var(--spacing-md);
-            width: 16px;
-            height: 16px;
-            color: var(--text-muted);
-            z-index: 1;
-            flex-shrink: 0;
+            font-size: 12px;
         }
 
         .form-input {
             width: 100%;
-            padding: var(--spacing-md) var(--spacing-md) var(--spacing-md) 44px;
-            background: var(--bg-primary);
-            border: 1px solid var(--border-primary);
+            padding: var(--spacing-sm);
+            background: var(--bg-accent);
+            border: 1px solid var(--border-light);
             border-radius: var(--radius-md);
             color: var(--text-primary);
-            font-size: clamp(12px, 3vw, 14px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(10px);
-            min-height: 44px;
+            font-size: var(--font-size-base);
+            min-height: 32px;
+            transition: all 0.2s ease;
         }
 
         .form-input:focus {
             outline: none;
             border-color: var(--primary-purple);
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
-            background: var(--bg-secondary);
-        }
-
-        .form-input::placeholder {
-            color: var(--text-muted);
-        }
-
-        .input-action {
-            position: absolute;
-            right: var(--spacing-md);
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            padding: var(--spacing-xs);
-            border-radius: var(--radius-sm);
-            transition: all 0.2s ease;
-            min-width: 32px;
-            min-height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .input-action:hover {
-            color: var(--text-primary);
-            background: var(--bg-tertiary);
-        }
-
-        .input-action svg {
-            width: 16px;
-            height: 16px;
-        }
-
-        .select-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
+            box-shadow: 0 0 0 2px rgba(109, 40, 217, 0.2);
         }
 
         .form-select {
             width: 100%;
-            padding: var(--spacing-md) 44px var(--spacing-md) 44px;
-            background: var(--bg-primary);
-            border: 1px solid var(--border-primary);
+            padding: var(--spacing-sm);
+            background: var(--bg-accent);
+            border: 1px solid var(--border-light);
             border-radius: var(--radius-md);
             color: var(--text-primary);
-            font-size: clamp(12px, 3vw, 14px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(10px);
-            appearance: none;
+            font-size: var(--font-size-base);
             cursor: pointer;
-            min-height: 44px;
+            min-height: 32px;
+            transition: all 0.2s ease;
         }
 
         .form-select:focus {
             outline: none;
             border-color: var(--primary-purple);
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
-            background: var(--bg-secondary);
-        }
-
-        .select-arrow {
-            position: absolute;
-            right: var(--spacing-md);
-            width: 16px;
-            height: 16px;
-            color: var(--text-muted);
-            pointer-events: none;
-            transition: transform 0.2s ease;
-        }
-
-        .form-select:focus + .select-arrow {
-            transform: rotate(180deg);
-            color: var(--primary-purple);
+            box-shadow: 0 0 0 2px rgba(109, 40, 217, 0.2);
         }
 
         .slider-wrapper {
             display: flex;
             flex-direction: column;
-            gap: var(--spacing-sm);
+            gap: var(--spacing-xs);
         }
 
         .slider-info {
             display: flex;
             justify-content: space-between;
-            font-size: clamp(10px, 2.5vw, 12px);
+            font-size: 12px;
             color: var(--text-muted);
-            font-weight: 500;
         }
 
         .form-slider {
             width: 100%;
-            height: 8px;
-            background: var(--bg-tertiary);
+            height: 6px;
+            background: var(--bg-accent);
             border-radius: 4px;
-            outline: none;
+            border: 1px solid var(--border-light);
             -webkit-appearance: none;
-            border: 1px solid var(--border-primary);
             cursor: pointer;
-            position: relative;
         }
 
         .form-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 24px;
-            height: 24px;
-            background: linear-gradient(45deg, var(--primary-purple), var(--primary-cyan));
+            width: 14px;
+            height: 14px;
+            background: var(--primary-purple);
             border-radius: 50%;
             cursor: pointer;
-            box-shadow: var(--shadow-sm), 0 0 10px rgba(139, 92, 246, 0.3);
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 2px solid white;
-        }
-
-        .form-slider::-webkit-slider-thumb:hover {
-            transform: scale(1.1);
-            box-shadow: var(--shadow-md), 0 0 15px rgba(139, 92, 246, 0.5);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         }
 
         .form-slider::-moz-range-thumb {
-            width: 24px;
-            height: 24px;
-            background: linear-gradient(45deg, var(--primary-purple), var(--primary-cyan));
+            width: 14px;
+            height: 14px;
+            background: var(--primary-purple);
             border-radius: 50%;
             cursor: pointer;
-            border: 2px solid white;
-            box-shadow: var(--shadow-sm), 0 0 10px rgba(139, 92, 246, 0.3);
-        }
-
-        .toggle-group {
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-md);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         }
 
         .toggle-item {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            padding: var(--spacing-md);
-            background: var(--bg-primary);
-            border: 1px solid var(--border-primary);
+            align-items: center;
+            padding: var(--spacing-sm);
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
             border-radius: var(--radius-md);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            gap: var(--spacing-md);
-        }
-
-        .toggle-item:hover {
-            background: var(--bg-secondary);
-            border-color: var(--border-secondary);
-        }
-
-        .toggle-info {
-            flex: 1;
-            min-width: 0;
         }
 
         .toggle-title {
-            font-size: clamp(12px, 3vw, 14px);
+            font-size: var(--font-size-base);
             font-weight: 500;
-            color: var(--text-primary);
-            margin-bottom: 2px;
         }
 
         .toggle-description {
-            font-size: clamp(10px, 2.5vw, 12px);
+            font-size: 12px;
             color: var(--text-muted);
-            line-height: 1.4;
-        }
-
-        .toggle-wrapper {
-            position: relative;
-            flex-shrink: 0;
-        }
-
-        .toggle-input {
-            position: absolute;
-            opacity: 0;
-            width: 0;
-            height: 0;
         }
 
         .toggle-switch {
             position: relative;
-            display: inline-block;
-            width: 48px;
-            height: 26px;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-primary);
-            border-radius: 13px;
+            width: 36px;
+            height: 20px;
+            background: var(--bg-accent);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .toggle-slider {
             position: absolute;
             top: 2px;
             left: 2px;
-            width: 20px;
-            height: 20px;
-            background: white;
+            width: 16px;
+            height: 16px;
+            background: var(--text-primary);
             border-radius: 50%;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: var(--shadow-sm);
+            transition: transform 0.2s ease;
+        }
+
+        .toggle-input {
+            display: none;
         }
 
         .toggle-input:checked + .toggle-switch {
-            background: linear-gradient(45deg, var(--primary-purple), #7c3aed);
+            background: var(--primary-purple);
             border-color: var(--primary-purple);
-            box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
         }
 
         .toggle-input:checked + .toggle-switch .toggle-slider {
-            transform: translateX(22px);
-            box-shadow: var(--shadow-sm), 0 0 10px rgba(139, 92, 246, 0.2);
-        }
-
-        .toggle-input:focus + .toggle-switch {
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+            transform: translateX(16px);
         }
 
         .modal-footer {
-            border-top: 1px solid var(--border-primary);
-            padding: var(--spacing-lg);
+            border-top: 1px solid var(--border-light);
+            padding: var(--spacing-sm);
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: var(--bg-secondary);
-            flex-wrap: wrap;
-            gap: var(--spacing-md);
-        }
-
-        .footer-info {
-            display: flex;
-            align-items: center;
+            justify-content: flex-end;
             gap: var(--spacing-sm);
-            font-size: clamp(11px, 3vw, 13px);
-            color: var(--text-muted);
-        }
-
-        .info-icon {
-            width: 16px;
-            height: 16px;
-            color: var(--primary-cyan);
-            flex-shrink: 0;
-        }
-
-        .footer-actions {
-            display: flex;
-            gap: var(--spacing-md);
-            flex-wrap: wrap;
         }
 
         .btn {
-            padding: var(--spacing-md) var(--spacing-lg);
-            border-radius: var(--radius-sm);
-            font-size: clamp(12px, 3vw, 14px);
-            font-weight: 600;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-base);
+            font-weight: 500;
             cursor: pointer;
             border: none;
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-xs);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(10px);
-            min-height: 44px;
-            white-space: nowrap;
+            transition: all 0.2s ease;
         }
 
         .btn-outline {
-            background: var(--bg-primary);
-            border: 1px solid var(--border-primary);
+            background: var(--bg-accent);
+            border: 1px solid var(--border-light);
             color: var(--text-secondary);
         }
 
         .btn-outline:hover {
-            background: var(--bg-secondary);
-            border-color: var(--border-secondary);
-            color: var(--text-primary);
-            transform: translateY(-1px);
+            background: var(--bg-card);
+            border-color: var(--border-accent);
         }
 
         .btn-primary {
-            background: linear-gradient(45deg, var(--primary-purple), #7c3aed);
-            color: white;
-            border: 1px solid var(--primary-purple);
+            background: var(--primary-purple);
+            color: var(--text-primary);
         }
 
         .btn-primary:hover {
-            background: linear-gradient(45deg, #7c3aed, #6d28d9);
-            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
-            transform: translateY(-1px);
+            background: #5b21b6;
         }
 
         .hidden {
@@ -1749,242 +957,97 @@
         }
 
         .icon {
-            width: 16px;
-            height: 16px;
-            fill: currentColor;
-            flex-shrink: 0;
+            width: 14px;
+            height: 14px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
         }
 
         .icon-sm {
-            width: 14px;
-            height: 14px;
-            flex-shrink: 0;
+            width: 12px;
+            height: 12px;
         }
 
-        .focusable:focus {
-            outline: 2px solid var(--primary-purple);
-            outline-offset: 2px;
-        }
-
-        /* Responsive Design - Mobile Portrait */
         @media (max-width: 480px) and (orientation: portrait) {
             .container {
-                padding: var(--spacing-md);
-                gap: var(--spacing-md);
+                padding: var(--spacing-sm);
             }
 
             .header-content {
                 flex-direction: column;
-                align-items: stretch;
+                align-items: center;
                 text-align: center;
+                gap: var(--spacing-xs);
             }
 
-            .header-controls {
-                justify-content: center;
-            }
-
-            .control-grid {
+            .system-stats, .info-grid {
                 grid-template-columns: 1fr;
-                gap: var(--spacing-md);
-            }
-
-            .system-stats {
-                grid-template-columns: 1fr;
-                gap: var(--spacing-sm);
             }
 
             .joystick {
-                width: 120px;
-                height: 120px;
+                width: 70px;
+                height: 70px;
             }
 
             .joystick-knob {
-                width: 35px;
-                height: 35px;
-            }
-
-            .movement-btn-face {
-                min-height: 50px;
-                padding: var(--spacing-md);
-            }
-
-            .orb {
-                display: none;
+                width: 20px;
+                height: 20px;
             }
 
             .modal-content {
-                max-width: 95vw;
-                margin: var(--spacing-sm);
+                max-width: 90vw;
             }
 
-            .modal-header {
-                padding: var(--spacing-lg);
+            .movement-btn-face {
+                padding: var(--spacing-sm);
+                font-size: 12px;
             }
 
-            .section-header {
-                padding: var(--spacing-md);
+            .pump-btn-face {
+                width: 28px;
+                height: 28px;
             }
 
-            .section-content {
-                padding: var(--spacing-md);
-            }
-
-            .modal-footer {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .footer-actions {
-                justify-content: stretch;
-            }
-
-            .footer-actions .btn {
-                flex: 1;
+            .pump-icon {
+                width: 12px;
+                height: 12px;
             }
         }
 
-        /* Mobile Landscape */
         @media (max-width: 768px) and (orientation: landscape) {
-            .container {
-                padding: var(--spacing-sm) var(--spacing-md);
-                gap: var(--spacing-md);
-            }
-
-            .control-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: var(--spacing-md);
-            }
-
-            .stats-grid {
+            .control-grid, .stats-grid {
                 grid-template-columns: 1fr 1fr;
+            }
+
+            .joystick {
+                width: 80px;
+                height: 80px;
             }
 
             .header-content {
                 flex-wrap: nowrap;
             }
+        }
 
-            .title {
-                font-size: 20px;
+        @media (min-width: 769px) {
+            .control-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
             }
 
             .joystick {
-                width: 100px;
-                height: 100px;
-            }
-
-            .joystick-knob {
-                width: 30px;
-                height: 30px;
-            }
-
-            .movement-btn-face {
-                min-height: 40px;
-                font-size: 12px;
-            }
-
-            .modal-content {
-                max-height: 85vh;
-            }
-        }
-
-        /* Tablet Portrait */
-        @media (min-width: 481px) and (max-width: 768px) and (orientation: portrait) {
-            .control-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Tablet Landscape */
-        @media (min-width: 769px) and (max-width: 1024px) {
-            .control-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        /* Desktop */
-        @media (min-width: 1025px) {
-            .control-grid {
-                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg-tertiary);
-            border-radius: 3px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(45deg, var(--primary-purple), var(--primary-cyan));
-            border-radius: 3px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(45deg, #7c3aed, #0891b2);
-        }
-
-        /* Touch optimizations */
-        @media (hover: none) and (pointer: coarse) {
-            .card:hover {
-                transform: none;
-            }
-
-            .card:hover::before {
-                left: -100%;
-            }
-
-            .settings-btn:hover {
-                transform: none;
-            }
-
-            .tab-button:hover {
-                color: var(--text-secondary);
-            }
-
-            .tab-button:hover::before {
-                width: 0;
-            }
-
-            .movement-btn-face,
-            .pump-btn-face,
-            .joystick,
-            .slider,
-            .tab-button,
-            .settings-btn {
-                touch-action: manipulation;
+                width: 90px;
+                height: 90px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Background Effects -->
-    <div class="background-effects">
-        <div class="floating-orbs">
-            <div class="orb"></div>
-            <div class="orb"></div>
-            <div class="orb"></div>
-        </div>
-        <div class="grid-overlay"></div>
-    </div>
-
     <div class="container">
-        <!-- Header -->
         <div class="card header">
             <div class="header-content">
                 <div class="title">
@@ -1993,7 +1056,7 @@
                 </div>
                 <div class="header-controls">
                     <div class="wifi-status">
-                        <svg class="wifi-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg class="wifi-icon icon-sm" viewBox="0 0 24 24">
                             <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
                             <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
                             <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
@@ -2001,8 +1064,8 @@
                         </svg>
                         <span id="connection-status">Connected</span>
                     </div>
-                    <button class="settings-btn focusable" onclick="toggleSettings()">
-                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <button class="settings-btn" onclick="toggleSettings()">
+                        <svg class="icon-sm" viewBox="0 0 24 24">
                             <circle cx="12" cy="12" r="3"></circle>
                             <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"></path>
                         </svg>
@@ -2011,18 +1074,17 @@
             </div>
         </div>
 
-        <!-- Tabs -->
         <div class="tabs">
             <div class="tab-list">
-                <button class="tab-button active focusable" onclick="switchTab('control')">
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <button class="tab-button active" onclick="switchTab('control')">
+                    <svg class="icon-sm" viewBox="0 0 24 24">
                         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                         <polyline points="9,22 9,12 15,12 15,22"></polyline>
                     </svg>
                     Control
                 </button>
-                <button class="tab-button focusable" onclick="switchTab('stats')">
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <button class="tab-button" onclick="switchTab('stats')">
+                    <svg class="icon-sm" viewBox="0 0 24 24">
                         <line x1="12" y1="20" x2="12" y2="10"></line>
                         <line x1="18" y1="20" x2="18" y2="4"></line>
                         <line x1="6" y1="20" x2="6" y2="16"></line>
@@ -2031,10 +1093,8 @@
                 </button>
             </div>
 
-            <!-- Control Tab -->
             <div id="control-tab" class="tab-content active">
                 <div class="control-grid">
-                    <!-- Movement Panel -->
                     <div class="card panel">
                         <div class="panel-header">
                             <div class="panel-title">Movement Control</div>
@@ -2047,12 +1107,11 @@
                                      onmouseleave="stopMovement('forward')"
                                      ontouchstart="startMovement('forward')"
                                      ontouchend="stopMovement('forward')">
-                                    <div class="movement-btn-shadow"></div>
                                     <div class="movement-btn-face">
-                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <svg class="icon-sm" viewBox="0 0 24 24">
                                             <polyline points="18,15 12,9 6,15"></polyline>
                                         </svg>
-                                        FORWARD
+                                        Forward
                                     </div>
                                 </div>
                                 <div class="movement-btn backward-btn"
@@ -2061,12 +1120,11 @@
                                      onmouseleave="stopMovement('backward')"
                                      ontouchstart="startMovement('backward')"
                                      ontouchend="stopMovement('backward')">
-                                    <div class="movement-btn-shadow"></div>
                                     <div class="movement-btn-face">
-                                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <svg class="icon-sm" viewBox="0 0 24 24">
                                             <polyline points="6,9 12,15 18,9"></polyline>
                                         </svg>
-                                        BACKWARD
+                                        Backward
                                     </div>
                                 </div>
                             </div>
@@ -2078,31 +1136,28 @@
                                         <span class="servo-current" id="servo-value">90°</span>
                                         <span>180°</span>
                                     </div>
-                                    <input type="range" class="slider focusable" min="0" max="180" value="90" 
+                                    <input type="range" class="slider" min="0" max="180" value="90" 
                                            oninput="updateServo(this.value)" id="servo-slider">
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Battery Panel -->
                     <div class="card panel">
                         <div class="panel-header">
                             <div class="panel-title">Power Status</div>
                         </div>
                         <div class="panel-content">
                             <div class="battery-display" id="battery-display">
-                                <svg class="battery-icon" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
+                                <svg class="battery-icon" viewBox="0 0 24 24">
                                     <rect x="1" y="6" width="18" height="12" rx="2" ry="2"></rect>
                                     <line x1="23" y1="13" x2="23" y2="11"></line>
                                 </svg>
                                 <div class="battery-percentage" id="battery-percentage">75%</div>
                                 <div class="battery-label">Battery Level</div>
                             </div>
-                            <div class="battery-bar">
-                                <div class="battery-bar-bg">
-                                    <div class="battery-bar-fill" id="battery-bar-fill" style="width: 75%"></div>
-                                </div>
+                            <div class="battery-bar-bg">
+                                <div class="battery-bar-fill" id="battery-bar-fill" style="width: 75%"></div>
                             </div>
                             <div class="system-stats">
                                 <div class="stat-item">
@@ -2117,7 +1172,6 @@
                         </div>
                     </div>
 
-                    <!-- System Panel -->
                     <div class="card panel">
                         <div class="panel-header">
                             <div class="panel-title">System Status</div>
@@ -2144,14 +1198,12 @@
                         </div>
                     </div>
 
-                    <!-- Direction Panel -->
                     <div class="card panel">
                         <div class="panel-header">
                             <div class="panel-title">Direction Control</div>
                             <div class="pump-btn" id="pump-btn" onclick="togglePump()">
-                                <div class="pump-btn-shadow"></div>
                                 <div class="pump-btn-face">
-                                    <svg class="pump-icon" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
+                                    <svg class="pump-icon icon-sm" viewBox="0 0 24 24">
                                         <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
                                     </svg>
                                 </div>
@@ -2161,23 +1213,27 @@
                             <div class="joystick-container">
                                 <div class="joystick" id="joystick"
                                      onmousedown="startJoystick(event)"
-                                     ontouchstart="startJoystick(event)">
+                                     onmousemove="moveJoystick(event)"
+                                     onmouseup="stopJoystick()"
+                                     onmouseleave="stopJoystick()"
+                                     ontouchstart="startJoystick(event)"
+                                     ontouchmove="moveJoystick(event)"
+                                     ontouchend="stopJoystick()">
                                     <div class="joystick-knob" id="joystick-knob"></div>
-                                    <div class="joystick-center"></div>
                                 </div>
                                 <div class="joystick-values">
                                     <div class="joystick-value">
                                         <div class="joystick-number" id="joystick-x">0</div>
-                                        <div class="joystick-axis">X</div>
+                                        <div class="joystick-axis">X-Axis</div>
                                     </div>
                                     <div class="joystick-value">
                                         <div class="joystick-number" id="joystick-y">0</div>
-                                        <div class="joystick-axis">Y</div>
+                                        <div class="joystick-axis">Y-Axis</div>
                                     </div>
                                 </div>
                                 <div class="direction-indicator">
                                     <div class="direction-label">Direction</div>
-                                    <div class="direction-value" id="direction-value">CENTER</div>
+                                    <div class="direction-value" id="direction-value">Center</div>
                                 </div>
                             </div>
                         </div>
@@ -2185,10 +1241,8 @@
                 </div>
             </div>
 
-            <!-- Stats Tab -->
             <div id="stats-tab" class="tab-content">
                 <div class="stats-grid">
-                    <!-- Sensor Data -->
                     <div class="card panel">
                         <div class="panel-header">
                             <div class="panel-title">Sensor Data</div>
@@ -2227,7 +1281,6 @@
                         </div>
                     </div>
 
-                    <!-- System Stats -->
                     <div class="card panel">
                         <div class="panel-header">
                             <div class="panel-title">System Information</div>
@@ -2237,38 +1290,38 @@
                                 <div class="progress-item">
                                     <div class="progress-header">
                                         <span class="progress-label">CPU Usage</span>
-                                        <span class="progress-value" style="color: var(--primary-blue);">32%</span>
+                                        <span class="progress-value" style="color: var(--primary-blue);" id="cpu-value">32%</span>
                                     </div>
                                     <div class="progress-bar">
-                                        <div class="progress-fill" style="width: 32%; background: var(--primary-blue);"></div>
+                                        <div class="progress-fill" id="cpu-fill" style="width: 32%; background: var(--primary-blue);"></div>
                                     </div>
                                 </div>
                                 <div class="progress-item">
                                     <div class="progress-header">
                                         <span class="progress-label">Memory Usage</span>
-                                        <span class="progress-value" style="color: var(--primary-purple);">64%</span>
+                                        <span class="progress-value" id="memory-value">64%</span>
                                     </div>
                                     <div class="progress-bar">
-                                        <div class="progress-fill" style="width: 64%; background: var(--primary-purple);"></div>
+                                        <div class="progress-fill" id="memory-fill" style="width: 64%; background: var(--primary-purple);"></div>
                                     </div>
                                 </div>
                                 <div class="progress-item">
                                     <div class="progress-header">
                                         <span class="progress-label">Network Traffic</span>
-                                        <span class="progress-value" style="color: var(--primary-green);">2.4 KB/s</span>
+                                        <span class="progress-value" id="network-value">2.4 KB/s</span>
                                     </div>
                                     <div class="progress-bar">
-                                        <div class="progress-fill" style="width: 24%; background: var(--primary-green);"></div>
+                                        <div class="progress-fill" id="network-fill" style="width: 24%; background: var(--primary-green);"></div>
                                     </div>
                                 </div>
                                 <div class="info-grid">
                                     <div class="info-item">
                                         <div class="info-label">Uptime</div>
-                                        <div class="info-value">3h 24m 12s</div>
+                                        <div class="info-value" id="uptime-value">3h 24m</div>
                                     </div>
                                     <div class="info-item">
                                         <div class="info-label">IP Address</div>
-                                        <div class="info-value">192.168.1.105</div>
+                                        <div class="info-value">192.168.1.100</div>
                                     </div>
                                     <div class="info-item">
                                         <div class="info-label">MAC Address</div>
@@ -2281,16 +1334,7 @@
                                 </div>
                                 <div class="log-container">
                                     <div class="log-header">Recent Activity</div>
-                                    <div class="log-content" id="log-content">
-                                        <div class="log-entry log-success">[12:34:56] System started</div>
-                                        <div class="log-entry log-info">[12:35:01] WiFi connected</div>
-                                        <div class="log-entry log-info">[12:35:12] Sensors initialized</div>
-                                        <div class="log-entry log-warning">[12:36:45] Battery level: 75%</div>
-                                        <div class="log-entry log-info">[12:37:23] Motor control ready</div>
-                                        <div class="log-entry log-error">[12:38:10] Warning: High temperature</div>
-                                        <div class="log-entry log-info">[12:39:05] Temperature normalized</div>
-                                        <div class="log-entry log-info">[12:40:22] Client connected</div>
-                                    </div>
+                                    <div class="log-content" id="log-content"></div>
                                 </div>
                             </div>
                         </div>
@@ -2299,7 +1343,6 @@
             </div>
         </div>
 
-        <!-- Footer -->
         <div class="card footer">
             <div class="footer-content">
                 <div>ESP32 Control Panel v2.0</div>
@@ -2308,22 +1351,15 @@
         </div>
     </div>
 
-    <!-- Enhanced Settings Modal -->
     <div id="settings-modal" class="modal-overlay hidden">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="modal-title-section">
-                    <svg class="modal-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="3"></circle>
-                        <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"></path>
-                    </svg>
-                    <div>
-                        <div class="modal-title">Device Settings</div>
-                        <div class="modal-subtitle">Configure your ESP32 control panel</div>
-                    </div>
+                <div>
+                    <div class="modal-title">Device Settings</div>
+                    <div class="modal-subtitle">Configure your ESP32 control panel</div>
                 </div>
-                <button class="close-btn focusable" onclick="toggleSettings()">
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <button class="close-btn" onclick="toggleSettings()">
+                    <svg class="icon-sm" viewBox="0 0 24 24">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
                         <line x1="6" y1="6" x2="18" y2="18"></line>
                     </svg>
@@ -2331,720 +1367,300 @@
             </div>
             
             <div class="settings-content">
-                <!-- Network Section -->
                 <div class="settings-section">
                     <div class="section-header">
-                        <div class="section-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
-                                <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
-                                <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
-                                <line x1="12" y1="20" x2="12.01" y2="20"></line>
-                            </svg>
-                        </div>
-                        <div class="section-info">
-                            <div class="section-title">Network Configuration</div>
-                            <div class="section-description">Configure WiFi and connection settings</div>
-                        </div>
+                        <div class="section-title">Network Configuration</div>
+                        <div class="section-description">Configure WiFi and connection settings</div>
                     </div>
                     <div class="section-content">
                         <div class="input-group">
-                            <label class="input-label">
-                                <span class="label-text">WiFi Network Name</span>
-                                <span class="label-required">*</span>
-                            </label>
-                            <div class="input-wrapper">
-                                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
-                                    <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
-                                    <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
-                                    <line x1="12" y1="20" x2="12.01" y2="20"></line>
-                                </svg>
-                                <input type="text" class="form-input focusable" value="ESP32_Network" id="wifi-ssid" placeholder="Enter WiFi SSID">
-                            </div>
+                            <label class="input-label">WiFi Network Name <span class="label-required">*</span></label>
+                            <input type="text" class="form-input" value="ESP32_Network" id="wifi-ssid" placeholder="Enter WiFi SSID">
                         </div>
                         <div class="input-group">
-                            <label class="input-label">
-                                <span class="label-text">WiFi Password</span>
-                                <span class="label-optional">Optional</span>
-                            </label>
-                            <div class="input-wrapper">
-                                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                    <circle cx="12" cy="16" r="1"></circle>
-                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-                                </svg>
-                                <input type="password" class="form-input focusable" value="********" id="wifi-password" placeholder="Enter password">
-                                <button type="button" class="input-action" onclick="togglePasswordVisibility('wifi-password')">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                        <circle cx="12" cy="12" r="3"></circle>
-                                    </svg>
-                                </button>
-                            </div>
+                            <label class="input-label">WiFi Password <span class="label-optional">Optional</span></label>
+                            <input type="password" class="form-input" value="" id="wifi-password" placeholder="Enter password">
                         </div>
                         <div class="input-group">
-                            <label class="input-label">
-                                <span class="label-text">Connection Type</span>
-                            </label>
-                            <div class="select-wrapper">
-                                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="12" cy="12" r="2"></circle>
-                                    <path d="M12 1v6m0 6v6"></path>
-                                    <path d="M1 12h6m6 0h6"></path>
-                                </svg>
-                                <select class="form-select focusable" id="connection-type">
-                                    <option value="wifi">WiFi Connection</option>
-                                    <option value="bluetooth">Bluetooth LE</option>
-                                    <option value="serial">Serial USB</option>
-                                    <option value="ethernet">Ethernet</option>
-                                </select>
-                                <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="6,9 12,15 18,9"></polyline>
-                                </svg>
-                            </div>
+                            <label class="input-label">Connection Type</label>
+                            <select class="form-select" id="connection-type">
+                                <option value="wifi">WiFi Connection</option>
+                                <option value="bluetooth">Bluetooth LE</option>
+                                <option value="serial">Serial USB</option>
+                            </select>
                         </div>
                     </div>
                 </div>
 
-                <!-- Device Section -->
                 <div class="settings-section">
                     <div class="section-header">
-                        <div class="section-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                                <line x1="8" y1="21" x2="16" y2="21"></line>
-                                <line x1="12" y1="17" x2="12" y2="21"></line>
-                            </svg>
-                        </div>
-                        <div class="section-info">
-                            <div class="section-title">Device Configuration</div>
-                            <div class="section-description">Customize device behavior and performance</div>
-                        </div>
+                        <div class="section-title">Device Configuration</div>
+                        <div class="section-description">Customize device behavior</div>
                     </div>
                     <div class="section-content">
                         <div class="input-group">
-                            <label class="input-label">
-                                <span class="label-text">Device Name</span>
-                            </label>
-                            <div class="input-wrapper">
-                                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                    <circle cx="12" cy="7" r="4"></circle>
-                                </svg>
-                                <input type="text" class="form-input focusable" value="ESP32-Robot" id="device-name" placeholder="Enter device name">
-                            </div>
+                            <label class="input-label">Device Name</label>
+                            <input type="text" class="form-input" value="ESP32-Robot" id="device-name" placeholder="Enter device name">
                         </div>
                         <div class="input-group">
-                            <label class="input-label">
-                                <span class="label-text">Refresh Rate</span>
-                                <span class="label-value" id="refresh-rate-value">100ms</span>
-                            </label>
+                            <label class="input-label">Refresh Rate</label>
                             <div class="slider-wrapper">
+                                <input type="range" class="form-slider" min="1" max="60" value="10" id="refresh-rate">
                                 <div class="slider-info">
-                                    <span class="slider-min">50ms</span>
-                                    <span class="slider-max">500ms</span>
+                                    <span>1 Hz</span>
+                                    <span id="refresh-value">10 Hz</span>
+                                    <span>60 Hz</span>
                                 </div>
-                                <input type="range" class="form-slider focusable" min="50" max="500" value="100" step="10" 
-                                       oninput="updateRefreshRate(this.value)" id="refresh-rate">
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Preferences Section -->
-                <div class="settings-section">
-                    <div class="section-header">
-                        <div class="section-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                            </svg>
-                        </div>
-                        <div class="section-info">
-                            <div class="section-title">Preferences</div>
-                            <div class="section-description">Customize your experience and power settings</div>
-                        </div>
-                    </div>
-                    <div class="section-content">
-                        <div class="toggle-group">
-                            <div class="toggle-item">
-                                <div class="toggle-info">
-                                    <div class="toggle-title">Auto Connect</div>
-                                    <div class="toggle-description">Automatically connect to WiFi on startup</div>
-                                </div>
-                                <div class="toggle-wrapper">
-                                    <input type="checkbox" class="toggle-input" id="auto-connect-input" checked>
-                                    <label for="auto-connect-input" class="toggle-switch">
-                                        <span class="toggle-slider"></span>
-                                    </label>
-                                </div>
+                        <div class="toggle-item">
+                            <div>
+                                <div class="toggle-title">Auto Reconnect</div>
+                                <div class="toggle-description">Reconnect on signal loss</div>
                             </div>
-                            <div class="toggle-item">
-                                <div class="toggle-info">
-                                    <div class="toggle-title">Power Saving Mode</div>
-                                    <div class="toggle-description">Reduce power consumption when idle</div>
-                                </div>
-                                <div class="toggle-wrapper">
-                                    <input type="checkbox" class="toggle-input" id="power-saving-input">
-                                    <label for="power-saving-input" class="toggle-switch">
-                                        <span class="toggle-slider"></span>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="toggle-item">
-                                <div class="toggle-info">
-                                    <div class="toggle-title">Debug Mode</div>
-                                    <div class="toggle-description">Enable detailed logging and diagnostics</div>
-                                </div>
-                                <div class="toggle-wrapper">
-                                    <input type="checkbox" class="toggle-input" id="debug-mode-input">
-                                    <label for="debug-mode-input" class="toggle-switch">
-                                        <span class="toggle-slider"></span>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="toggle-item">
-                                <div class="toggle-info">
-                                    <div class="toggle-title">Haptic Feedback</div>
-                                    <div class="toggle-description">Enable vibration feedback for interactions</div>
-                                </div>
-                                <div class="toggle-wrapper">
-                                    <input type="checkbox" class="toggle-input" id="haptic-feedback-input" checked>
-                                    <label for="haptic-feedback-input" class="toggle-switch">
-                                        <span class="toggle-slider"></span>
-                                    </label>
-                                </div>
-                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" class="toggle-input" id="auto-reconnect" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="modal-footer">
-                <div class="footer-info">
-                    <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="12" y1="16" x2="12" y2="12"></line>
-                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                    </svg>
-                    <span>Changes will be applied immediately</span>
-                </div>
-                <div class="footer-actions">
-                    <button class="btn btn-outline focusable" onclick="resetSettings()">
-                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="23,4 23,10 17,10"></polyline>
-                            <polyline points="1,20 1,14 7,14"></polyline>
-                            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
-                        </svg>
-                        Reset
-                    </button>
-                    <button class="btn btn-primary focusable" onclick="saveSettings()">
-                        <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                            <polyline points="17,21 17,13 7,13 7,21"></polyline>
-                            <polyline points="7,3 7,8 15,8"></polyline>
-                        </svg>
-                        Save Changes
-                    </button>
-                </div>
+                <button class="btn btn-outline" onclick="toggleSettings()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveSettings()">Save</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Global state management
-        let joystickActive = false;
-        let joystickPosition = { x: 0, y: 0 };
-        let batteryLevel = 75;
-        let servoPosition = 90;
-        let isPumpActive = false;
-        let activeTab = 'control';
-        let sensorData = {
-            temperature: [23, 24, 22, 23, 25, 24, 23, 22, 23, 24],
-            humidity: [45, 46, 44, 45, 47, 48, 46, 45, 44, 46],
-            pressure: [1013, 1014, 1012, 1013, 1015, 1014, 1013, 1012, 1013, 1014],
-            distance: [120, 118, 122, 125, 119, 120, 121, 123, 122, 120]
-        };
-
-        // Initialize application
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeApp();
-            setupEventListeners();
-            startDataUpdates();
-        });
-
-        function initializeApp() {
-            updateTime();
-            initializeCharts();
-            updateBatteryDisplay();
-            updateJoystickDisplay();
-        }
-
-        function setupEventListeners() {
-            // Global mouse/touch event listeners for joystick
-            document.addEventListener('mousemove', handleJoystickMove);
-            document.addEventListener('mouseup', stopJoystick);
-            document.addEventListener('touchmove', handleJoystickMove, { passive: false });
-            document.addEventListener('touchend', stopJoystick);
-            
-            // Keyboard shortcuts
-            document.addEventListener('keydown', handleKeyboardShortcuts);
-            
-            // Prevent context menu
-            document.addEventListener('contextmenu', e => e.preventDefault());
-        }
-
-        function startDataUpdates() {
-            setInterval(updateTime, 1000);
-            setInterval(updateBattery, 5000);
-            setInterval(updateSensorData, 3000);
-            setInterval(addLogEntry, 8000);
-        }
-
-        // Enhanced tab switching
-        function switchTab(tabName) {
-            // Update tab buttons
+        // Initialize tabs
+        function switchTab(tabId) {
             document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-            
-            // Update tab content with smooth transition
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            
-            setTimeout(() => {
-                document.getElementById(tabName + '-tab').classList.add('active');
-            }, 150);
-            
-            activeTab = tabName;
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.querySelector(`[onclick="switchTab('${tabId}')"]`).classList.add('active');
+            document.getElementById(`${tabId}-tab`).classList.add('active');
         }
 
-        // Enhanced movement controls
+        // Movement controls
         function startMovement(direction) {
             console.log(`Moving ${direction}`);
-            
-            // Add haptic feedback
-            if (navigator.vibrate) {
-                navigator.vibrate(50);
-            }
-            
-            // Visual feedback
-            const btn = event.currentTarget;
-            btn.style.transform = 'scale(0.98)';
-            
-            // Add to log
-            addLogEntry(`Movement: ${direction} started`, 'info');
+            addLog(`Started moving ${direction}`, 'info');
         }
 
         function stopMovement(direction) {
-            console.log(`Stop ${direction}`);
-            
-            // Remove visual feedback
-            const btn = event.currentTarget;
-            btn.style.transform = 'scale(1)';
-            
-            addLogEntry(`Movement: ${direction} stopped`, 'info');
+            console.log(`Stopped ${direction}`);
+            addLog(`Stopped moving ${direction}`, 'info');
         }
 
-        // Enhanced servo control
+        // Servo control
         function updateServo(value) {
-            servoPosition = parseInt(value);
-            document.getElementById('servo-value').textContent = value + '°';
-            
+            document.getElementById('servo-value').textContent = `${value}°`;
             console.log(`Servo position: ${value}°`);
-            addLogEntry(`Servo position set to ${value}°`, 'success');
+            addLog(`Servo set to ${value}°`, 'info');
         }
 
-        // Enhanced pump control
+        // Pump control
         function togglePump() {
-            isPumpActive = !isPumpActive;
             const pumpBtn = document.getElementById('pump-btn');
-            
-            if (isPumpActive) {
-                pumpBtn.classList.add('active');
-                addLogEntry('Pump activated', 'success');
-            } else {
-                pumpBtn.classList.remove('active');
-                addLogEntry('Pump deactivated', 'info');
-            }
-            
-            // Add haptic feedback
-            if (navigator.vibrate) {
-                navigator.vibrate(100);
-            }
-            
-            console.log(`Pump ${isPumpActive ? 'activated' : 'deactivated'}`);
+            pumpBtn.classList.toggle('active');
+            const state = pumpBtn.classList.contains('active') ? 'ON' : 'OFF';
+            console.log(`Pump: ${state}`);
+            addLog(`Pump turned ${state}`, state === 'ON' ? 'success' : 'info');
         }
 
-        // Enhanced joystick controls
+        // Joystick control
+        let isDragging = false;
+        const joystick = document.getElementById('joystick');
+        const knob = document.getElementById('joystick-knob');
+        const radius = joystick.offsetWidth / 2;
+        const knobRadius = knob.offsetWidth / 2;
+
         function startJoystick(event) {
-            event.preventDefault();
-            joystickActive = true;
-            
-            // Add visual feedback
-            const joystick = document.getElementById('joystick');
-            joystick.classList.add('active');
-            
-            addLogEntry('Joystick control started', 'info');
+            isDragging = true;
+            moveJoystick(event);
         }
 
-        function handleJoystickMove(event) {
-            if (!joystickActive) return;
-            
+        function moveJoystick(event) {
+            if (!isDragging) return;
+
             event.preventDefault();
-            const joystick = document.getElementById('joystick');
             const rect = joystick.getBoundingClientRect();
-            
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            
-            const clientX = event.touches ? event.touches[0].clientX : event.clientX;
-            const clientY = event.touches ? event.touches[0].clientY : event.clientY;
-            
-            const x = clientX - rect.left - centerX;
-            const y = clientY - rect.top - centerY;
-            
-            const distance = Math.sqrt(x * x + y * y);
-            const maxDistance = centerX - 25;
-            
-            if (distance <= maxDistance) {
-                joystickPosition = { x, y };
+            let clientX, clientY;
+
+            if (event.type.startsWith('touch')) {
+                clientX = event.touches[0].clientX;
+                clientY = event.touches[0].clientY;
             } else {
-                const angle = Math.atan2(y, x);
-                joystickPosition = {
-                    x: Math.cos(angle) * maxDistance,
-                    y: Math.sin(angle) * maxDistance
-                };
+                clientX = event.clientX;
+                clientY = event.clientY;
             }
-            
-            updateJoystickDisplay();
+
+            let x = clientX - rect.left - radius;
+            let y = clientY - rect.top - radius;
+            const distance = Math.sqrt(x * x + y * y);
+            const maxDistance = radius - knobRadius;
+
+            if (distance > maxDistance) {
+                x = (x / distance) * maxDistance;
+                y = (y / distance) * maxDistance;
+            }
+
+            knob.style.left = `${radius + x}px`;
+            knob.style.top = `${radius + y}px`;
+
+            const xValue = Math.round((x / maxDistance) * 100);
+            const yValue = Math.round((y / maxDistance) * 100);
+            document.getElementById('joystick-x').textContent = xValue;
+            document.getElementById('joystick-y').textContent = yValue;
+
+            let direction = 'Center';
+            if (Math.abs(xValue) > 30 || Math.abs(yValue) > 30) {
+                if (yValue < -50) direction = xValue > 50 ? 'Forward-Right' : xValue < -50 ? 'Forward-Left' : 'Forward';
+                else if (yValue > 50) direction = xValue > 50 ? 'Backward-Right' : xValue < -50 ? 'Backward-Left' : 'Backward';
+                else if (xValue > 50) direction = 'Right';
+                else if (xValue < -50) direction = 'Left';
+            }
+            document.getElementById('direction-value').textContent = direction;
+            console.log(`Joystick: X=${xValue}, Y=${yValue}, Direction=${direction}`);
         }
 
         function stopJoystick() {
-            if (!joystickActive) return;
-            joystickActive = false;
-            joystickPosition = { x: 0, y: 0 };
-            
-            // Remove visual feedback
-            const joystick = document.getElementById('joystick');
-            joystick.classList.remove('active');
-            
-            updateJoystickDisplay();
-            addLogEntry('Joystick control stopped', 'info');
+            if (!isDragging) return;
+            isDragging = false;
+            knob.style.left = '50%';
+            knob.style.top = '50%';
+            document.getElementById('joystick-x').textContent = '0';
+            document.getElementById('joystick-y').textContent = '0';
+            document.getElementById('direction-value').textContent = 'Center';
+            console.log('Joystick released');
+            addLog('Joystick returned to center', 'info');
         }
 
-        function updateJoystickDisplay() {
-            const knob = document.getElementById('joystick-knob');
-            knob.style.left = `calc(50% + ${joystickPosition.x}px)`;
-            knob.style.top = `calc(50% + ${joystickPosition.y}px)`;
-            
-            // Update values
-            document.getElementById('joystick-x').textContent = Math.round(joystickPosition.x);
-            document.getElementById('joystick-y').textContent = Math.round(joystickPosition.y);
-            
-            // Update direction
-            let direction = 'CENTER';
-            const threshold = 15;
-            if (Math.abs(joystickPosition.x) > Math.abs(joystickPosition.y)) {
-                if (joystickPosition.x > threshold) direction = 'RIGHT';
-                else if (joystickPosition.x < -threshold) direction = 'LEFT';
-            } else {
-                if (joystickPosition.y > threshold) direction = 'DOWN';
-                else if (joystickPosition.y < -threshold) direction = 'UP';
-            }
-            
-            const directionElement = document.getElementById('direction-value');
-            directionElement.textContent = direction;
-            
-            // Color coding for direction
-            const colors = {
-                'CENTER': 'var(--text-muted)',
-                'UP': 'var(--primary-blue)',
-                'DOWN': 'var(--primary-red)',
-                'LEFT': 'var(--primary-orange)',
-                'RIGHT': 'var(--primary-green)'
-            };
-            directionElement.style.color = colors[direction];
+        // Settings modal
+        function toggleSettings() {
+            document.getElementById('settings-modal').classList.toggle('hidden');
         }
 
-        // Enhanced battery simulation
+        function saveSettings() {
+            const ssid = document.getElementById('wifi-ssid').value;
+            const password = document.getElementById('wifi-password').value;
+            const connectionType = document.getElementById('connection-type').value;
+            const deviceName = document.getElementById('device-name').value;
+            const refreshRate = document.getElementById('refresh-rate').value;
+            const autoReconnect = document.getElementById('auto-reconnect').checked;
+
+            console.log('Settings saved:', { ssid, password, connectionType, deviceName, refreshRate, autoReconnect });
+            addLog('Settings saved successfully', 'success');
+            toggleSettings();
+        }
+
+        // Update refresh rate display
+        document.getElementById('refresh-rate')?.addEventListener('input', function() {
+            document.getElementById('refresh-value').textContent = `${this.value} Hz`;
+        });
+
+        // Battery status simulation
         function updateBattery() {
-            const change = Math.random() > 0.5 ? 1 : -1;
-            batteryLevel = Math.max(0, Math.min(100, batteryLevel + change));
-            updateBatteryDisplay();
-        }
-
-        function updateBatteryDisplay() {
+            const percentage = Math.floor(Math.random() * 100);
             const batteryDisplay = document.getElementById('battery-display');
             const batteryPercentage = document.getElementById('battery-percentage');
             const batteryBarFill = document.getElementById('battery-bar-fill');
-            
-            batteryPercentage.textContent = batteryLevel + '%';
-            batteryBarFill.style.width = batteryLevel + '%';
-            
-            // Update battery color class
-            batteryDisplay.className = 'battery-display';
-            if (batteryLevel > 50) {
-                batteryDisplay.classList.add('battery-high');
-            } else if (batteryLevel > 20) {
-                batteryDisplay.classList.add('battery-medium');
-            } else {
-                batteryDisplay.classList.add('battery-low');
-            }
+
+            batteryDisplay.classList.remove('battery-high', 'battery-medium', 'battery-low');
+            if (percentage > 60) batteryDisplay.classList.add('battery-high');
+            else if (percentage > 30) batteryDisplay.classList.add('battery-medium');
+            else batteryDisplay.classList.add('battery-low');
+
+            batteryPercentage.textContent = `${percentage}%`;
+            batteryBarFill.style.width = `${percentage}%`;
+
+            if (percentage < 20) addLog(`Low battery: ${percentage}%`, 'warning');
         }
 
-        // Enhanced sensor data simulation
+        // Sensor data simulation
         function updateSensorData() {
-            // Update temperature
-            const newTemp = sensorData.temperature[9] + (Math.random() > 0.5 ? 1 : -1);
-            sensorData.temperature = [...sensorData.temperature.slice(1), Math.max(15, Math.min(35, newTemp))];
-            
-            // Update humidity
-            const newHumidity = sensorData.humidity[9] + (Math.random() > 0.5 ? 2 : -2);
-            sensorData.humidity = [...sensorData.humidity.slice(1), Math.max(20, Math.min(80, newHumidity))];
-            
-            // Update pressure
-            const newPressure = sensorData.pressure[9] + (Math.random() > 0.5 ? 3 : -3);
-            sensorData.pressure = [...sensorData.pressure.slice(1), Math.max(990, Math.min(1030, newPressure))];
-            
-            // Update distance
-            const newDistance = sensorData.distance[9] + (Math.random() > 0.5 ? 5 : -5);
-            sensorData.distance = [...sensorData.distance.slice(1), Math.max(50, Math.min(200, newDistance))];
-            
-            // Update displays
-            document.getElementById('temp-value').textContent = sensorData.temperature[9] + '°C';
-            document.getElementById('humidity-value').textContent = sensorData.humidity[9] + '%';
-            document.getElementById('pressure-value').textContent = sensorData.pressure[9] + 'hPa';
-            document.getElementById('distance-value').textContent = sensorData.distance[9] + 'cm';
-            
-            // Update charts
-            updateChart('temp-chart', sensorData.temperature, 'var(--primary-blue)');
-            updateChart('humidity-chart', sensorData.humidity, 'var(--primary-green)');
-            updateChart('pressure-chart', sensorData.pressure, 'var(--primary-orange)');
-            updateChart('distance-chart', sensorData.distance, 'var(--primary-purple)');
-        }
+            const sensors = [
+                { id: 'temp', value: Math.random() * 10 + 20, unit: '°C', element: 'temp-value' },
+                { id: 'humidity', value: Math.random() * 20 + 40, unit: '%', element: 'humidity-value' },
+                { id: 'pressure', value: Math.random() * 50 + 1000, unit: 'hPa', element: 'pressure-value' },
+                { id: 'distance', value: Math.random() * 100 + 50, unit: 'cm', element: 'distance-value' }
+            ];
 
-        function initializeCharts() {
-            updateChart('temp-chart', sensorData.temperature, 'var(--primary-blue)');
-            updateChart('humidity-chart', sensorData.humidity, 'var(--primary-green)');
-            updateChart('pressure-chart', sensorData.pressure, 'var(--primary-orange)');
-            updateChart('distance-chart', sensorData.distance, 'var(--primary-purple)');
-        }
-
-        function updateChart(chartId, data, color) {
-            const chart = document.getElementById(chartId);
-            if (!chart) return;
-            
-            const max = Math.max(...data) * 1.1;
-            const min = Math.min(...data) * 0.9;
-            
-            chart.innerHTML = '';
-            data.forEach((value, index) => {
-                const bar = document.createElement('div');
-                bar.className = 'chart-bar';
-                bar.style.height = `${((value - min) / (max - min)) * 100}%`;
-                bar.style.backgroundColor = color;
-                bar.style.opacity = 0.4 + (index / data.length) * 0.6;
-                chart.appendChild(bar);
+            sensors.forEach(sensor => {
+                const value = Math.round(sensor.value * 10) / 10;
+                document.getElementById(sensor.element).textContent = `${value}${sensor.unit}`;
+                updateChart(sensor.id, value);
             });
         }
 
-        // Enhanced log system
-        function addLogEntry(message = null, type = null) {
+        // Chart update
+        function updateChart(sensorId, value) {
+            const chart = document.getElementById(`${sensorId}-chart`);
+            if (!chart) return;
+            chart.innerHTML = '';
+            for (let i = 0; i < 5; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'chart-bar';
+                bar.style.height = `${Math.random() * 20 + value / 10}px`;
+                chart.appendChild(bar);
+            }
+        }
+
+        // System info simulation
+        function updateSystemInfo() {
+            document.getElementById('cpu-value').textContent = `${Math.round(Math.random() * 50 + 20)}%`;
+            document.getElementById('cpu-fill').style.width = document.getElementById('cpu-value').textContent;
+            document.getElementById('memory-value').textContent = `${Math.round(Math.random() * 30 + 50)}%`;
+            document.getElementById('memory-fill').style.width = document.getElementById('memory-value').textContent;
+            document.getElementById('network-value').textContent = `${(Math.random() * 5 + 1).toFixed(1)} KB/s`;
+            document.getElementById('network-fill').style.width = `${Math.round(Math.random() * 40 + 10)}%`;
+            
+            const uptime = Math.floor(Math.random() * 3600 * 5);
+            const hours = Math.floor(uptime / 3600);
+            const minutes = Math.floor((uptime % 3600) / 60);
+            document.getElementById('uptime-value').textContent = `${hours}h ${minutes}m`;
+        }
+
+        // Log management
+        function addLog(message, type) {
             const logContent = document.getElementById('log-content');
-            const logTypes = ['info', 'success', 'warning', 'error'];
-            const logMessages = [
-                'Sensor reading updated',
-                'Command executed successfully',
-                'Battery level check completed',
-                'Network ping successful',
-                'Motor status verified',
-                'Temperature within normal range',
-                'Connection stable',
-                'Data transmission complete',
-                'System health check passed',
-                'Configuration saved'
-            ];
-            
-            const entryType = type || logTypes[Math.floor(Math.random() * logTypes.length)];
-            const entryMessage = message || logMessages[Math.floor(Math.random() * logMessages.length)];
-            const timestamp = new Date().toLocaleTimeString();
-            
-            const logEntry = document.createElement('div');
-            logEntry.className = `log-entry log-${entryType}`;
-            logEntry.textContent = `[${timestamp}] ${entryMessage}`;
-            
-            logContent.appendChild(logEntry);
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logContent.appendChild(entry);
             logContent.scrollTop = logContent.scrollHeight;
-            
-            // Remove old entries if too many
-            if (logContent.children.length > 50) {
+            if (logContent.children.length > 10) {
                 logContent.removeChild(logContent.firstChild);
             }
         }
 
-        // Enhanced settings modal
-        function toggleSettings() {
-            const modal = document.getElementById('settings-modal');
-            modal.classList.toggle('hidden');
-            
-            if (!modal.classList.contains('hidden')) {
-                // Focus first input
-                const firstInput = modal.querySelector('.form-input');
-                if (firstInput) firstInput.focus();
-            }
-        }
-
-        function togglePasswordVisibility(inputId) {
-            const input = document.getElementById(inputId);
-            const button = input.nextElementSibling;
-            const icon = button.querySelector('svg');
-            
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
-            } else {
-                input.type = 'password';
-                icon.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
-            }
-        }
-
-        function updateRefreshRate(value) {
-            document.getElementById('refresh-rate-value').textContent = value + 'ms';
-            addLogEntry(`Refresh rate set to ${value}ms`, 'info');
-        }
-
-        function resetSettings() {
-            // Reset form values
-            document.getElementById('wifi-ssid').value = 'ESP32_Network';
-            document.getElementById('wifi-password').value = '********';
-            document.getElementById('device-name').value = 'ESP32-Robot';
-            document.getElementById('refresh-rate').value = 100;
-            document.getElementById('refresh-rate-value').textContent = '100ms';
-            document.getElementById('connection-type').value = 'wifi';
-            
-            // Reset toggles
-            document.getElementById('auto-connect-input').checked = true;
-            document.getElementById('power-saving-input').checked = false;
-            document.getElementById('debug-mode-input').checked = false;
-            document.getElementById('haptic-feedback-input').checked = true;
-            
-            addLogEntry('Settings reset to defaults', 'warning');
-        }
-
-        function saveSettings() {
-            const settings = {
-                wifiSSID: document.getElementById('wifi-ssid').value,
-                wifiPassword: document.getElementById('wifi-password').value,
-                deviceName: document.getElementById('device-name').value,
-                refreshRate: document.getElementById('refresh-rate').value,
-                connectionType: document.getElementById('connection-type').value,
-                autoConnect: document.getElementById('auto-connect-input').checked,
-                powerSaving: document.getElementById('power-saving-input').checked,
-                debugMode: document.getElementById('debug-mode-input').checked,
-                hapticFeedback: document.getElementById('haptic-feedback-input').checked
-            };
-            
-            console.log('Settings saved:', settings);
-            
-            // Show save feedback
-            const saveBtn = event.target;
-            const originalText = saveBtn.innerHTML;
-            saveBtn.innerHTML = '<svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"></polyline></svg> Saved Successfully!';
-            saveBtn.style.background = 'linear-gradient(45deg, var(--primary-green), #059669)';
-            saveBtn.disabled = true;
-            
-            addLogEntry('Settings saved successfully', 'success');
-            
-            setTimeout(() => {
-                saveBtn.innerHTML = originalText;
-                saveBtn.style.background = 'linear-gradient(45deg, var(--primary-purple), #7c3aed)';
-                saveBtn.disabled = false;
-                toggleSettings();
-            }, 2000);
-        }
-
-        // Update time
+        // Time update
         function updateTime() {
-            const now = new Date();
-            const timeString = now.toLocaleTimeString();
-            document.getElementById('current-time').textContent = timeString;
+            document.getElementById('current-time').textContent = new Date().toLocaleString('en-US', { 
+                hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true 
+            });
         }
 
-        // Enhanced keyboard shortcuts
-        function handleKeyboardShortcuts(e) {
-            switch(e.key) {
-                case 'Escape':
-                    if (!document.getElementById('settings-modal').classList.contains('hidden')) {
-                        toggleSettings();
-                    }
-                    break;
-                case '1':
-                    if (!e.target.matches('input, textarea, select')) {
-                        switchTab('control');
-                    }
-                    break;
-                case '2':
-                    if (!e.target.matches('input, textarea, select')) {
-                        switchTab('stats');
-                    }
-                    break;
-                case 's':
-                    if (e.ctrlKey || e.metaKey) {
-                        e.preventDefault();
-                        toggleSettings();
-                    }
-                    break;
-                case 'p':
-                    if (!e.target.matches('input, textarea, select')) {
-                        togglePump();
-                    }
-                    break;
-                case 'ArrowUp':
-                    if (!e.target.matches('input, textarea, select')) {
-                        e.preventDefault();
-                        startMovement('forward');
-                        setTimeout(() => stopMovement('forward'), 100);
-                    }
-                    break;
-                case 'ArrowDown':
-                    if (!e.target.matches('input, textarea, select')) {
-                        e.preventDefault();
-                        startMovement('backward');
-                        setTimeout(() => stopMovement('backward'), 100);
-                    }
-                    break;
-            }
+        // Initialize
+        function init() {
+            updateBattery();
+            updateSensorData();
+            updateSystemInfo();
+            updateTime();
+            setInterval(updateBattery, 10000);
+            setInterval(updateSensorData, 5000);
+            setInterval(updateSystemInfo, 7000);
+            setInterval(updateTime, 1000);
+            addLog('System initialized', 'success');
+
+            // Joystick event listeners
+            joystick.addEventListener('mousemove', moveJoystick);
+            joystick.addEventListener('touchmove', moveJoystick, { passive: false });
         }
 
-        // Enhanced error handling
-        window.addEventListener('error', function(e) {
-            console.error('Application error:', e.error);
-            addLogEntry('Application error occurred', 'error');
-        });
-
-        // Performance monitoring
-        let lastFrameTime = performance.now();
-        function monitorPerformance() {
-            const currentTime = performance.now();
-            const deltaTime = currentTime - lastFrameTime;
-            lastFrameTime = currentTime;
-            
-            if (deltaTime > 50) {
-                console.warn('Performance warning: Frame time exceeded 50ms');
-            }
-            
-            requestAnimationFrame(monitorPerformance);
-        }
-        
-        // Start performance monitoring
-        requestAnimationFrame(monitorPerformance);
-
-        // Add initial log entries
-        setTimeout(() => {
-            addLogEntry('ESP32 Control Panel initialized', 'success');
-            addLogEntry('All systems operational', 'info');
-        }, 1000);
+        window.onload = init;
     </script>
 </body>
 </html>
